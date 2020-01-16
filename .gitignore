@@ -3,3 +3,4 @@
 /copy_current_database.bat
 /copy_current_database.sh
 /upgrade_app.sh
+/venv/

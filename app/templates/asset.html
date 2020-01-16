@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+<div class="container container-fluid well well-lg">
+<h3>{{query[2]}}</h3>
+<p>Id: {{query[0]}}</p>
+<p>Ticker: {{query[1]}}</p>
+{% if query[3] == null  or query[3] == '' %}
+{% else %}
+<p>Scrape type: {{query[3]}}</p>
+{% endif %}
+{% if query[4] == null  or query[4] == '' %}
+{% else %}
+<p>url: <a target="_blank" href="{{query[4]}}">{{query[4]}}</a></p>
+{% endif %}
+<p>Currency: {{query[5]}}</p>
+{% if query[6] == 0 %}
+<p>Download: False</p>
+{% endif %}
+{% if query[6] == 1 %}
+<p>Download: True</p>
+{% endif %}
+{% if query[7] == null  or query[7] == '' %}
+{% else %}
+<p>Family: {{query[7]}}</p>
+{% endif %}
+<p>Units: {{query[8]}}</p>
+</div>
+<div class="container container-fluid">
+<div class="row">
+	<form action="/asset/movement/{{query[0]}}" class="form-inline" method="POST">
+		<div class="form-group mb-2">
+			<label for="fecha" class="sr-only">Fecha</label>
+			<input type="date" class="form-control-plaintext" id="fecha" name="fecha" required>
+		</div>
+		<div class="form-group mx-sm-3 mb-2">
+			<label for="unidades" class="sr-only">Unidades</label>
+			<input type="text" class="form-control" id="unidades" name="unidades" required>
+		</div>
+		<div class="form-group mx-sm-3 mb-2">
+			<label for="precio" class="sr-only">Precio</label>
+			<input type="text" class="form-control" id="precio" name="precio" required>
+		</div>
+		<button type="submit" class="btn btn-primary mb-2">Add Movement</button>
+	</form>
+</div>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th scope="col">Date</th>
+			<th scope="col">Units</th>
+			<th scope="col">Price</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for item in data_2 %}
+		<tr>
+			<td>{{item[0]}}</td>
+			<td>{{item[1]}}</td>
+			<td>{{item[2]}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+</div>
+<div class="container container-fluid">
+<div class="row">
+	<form action="/asset/VL/{{query[0]}}" class="form-inline" method="POST">
+		<div class="form-group mb-2">
+			<label for="fecha" class="sr-only">Fecha</label>
+			<input type="date" class="form-control-plaintext" id="fecha" name="fecha" required>
+		</div>
+		<div class="form-group mx-sm-3 mb-2">
+			<label for="VL" class="sr-only">VL</label>
+			<input type="text" class="form-control" id="VL" name="VL" required>
+		</div>
+		<button type="submit" class="btn btn-primary mb-2">Add VL</button>
+	</form>
+</div>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th scope="col">Date</th>
+			<th scope="col">VL</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%for item in data_1 %}
+		<tr>
+			<td>{{item[0]}}</td>
+			<td>{{item[1]}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+</div>
+{% endblock %}

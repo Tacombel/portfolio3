@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<p>Scrape period: {{ data[0] }} minutes</p>
+<div class="row">
+	<form action="{{ url_for('settings') }}" class="form-inline" method="POST">
+		<div class="form-group mb-2">
+			<label for="value" class="sr-only">Fecha</label>
+			<input type="text" class="form-control-plaintext" id="value" name="value" required>
+		</div>
+		<button type="submit" class="btn btn-primary mb-2">Update</button>
+	</form>
+</div>
+{% endblock %}

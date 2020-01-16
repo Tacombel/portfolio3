@@ -1,0 +1,45 @@
+Installation steps
+
+pip install -r requirements.txt
+sudo apt-get install chromium-browser
+
+sudo nano /lib/systemd/system/scraper.service
+
+[Service]
+User=portfolio
+Environment=PATH=$PATH:/home/portfolio/portfolio/chromedriver/
+WorkingDirectory=/home/portfolio/portfolio/
+Type=idle
+Restart=always
+ExecStart=/home/portfolio/portfolio/venv/bin/python /home/portfolio/portfolio/scrape.py
+
+[Install]
+WantedBy=multi-user.target
+
+sudo systemctl daemon-reload
+sudo systemctl enable scraper.service
+sudo systemctl start scraper.service
+
+sudo nano /lib/systemd/system/portfolio2.service
+
+[Service]
+User=portfolio
+Environment=FLASK_APP=portfolio.py
+Environment=SECRET_KEY=33e23586f5b44cc483d617419f60f2e8
+Environment=MAIL_SERVER=smtp.googlemail.com
+Environment=MAIL_PORT=587
+Environment=MAIL_USE_TLS=1
+Environment=MAIL_USERNAME=roboot77777@gmail.com
+Environment=MAIL_PASSWORD=88888Roboot
+
+WorkingDirectory=/home/portfolio/portfolio/
+Type=idle
+Restart=always
+ExecStart=/home/portfolio/portfolio/venv/bin/flask run --host=0.0.0.0 --port=9093
+
+[Install]
+WantedBy=multi-user.target
+
+sudo systemctl daemon-reload
+sudo systemctl enable portfolio2.service
+sudo systemctl start portfolio2.service

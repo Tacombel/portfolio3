@@ -44,7 +44,7 @@ def date_str_to_date(fecha):
 
 
 def date_to_eu_format(fecha):
-    return date_str_to_date(fecha).strftime("%-d-%-m-%Y")
+    return date_str_to_date(fecha).strftime("%d-%m-%Y")
 
 
 def to_euros(value, date, currency):
@@ -414,8 +414,8 @@ def npv():
     difference = last_NPV - first_NPV
     data.append("{0:.2f}".format(last_NPV) + "€")
     data.append("{0:.2f}".format(first_NPV) + "€")
-    data.append(first_date.strftime("%-d-%-m-%Y"))
-    data.append(last_date.strftime("%-d-%-m-%Y"))
+    data.append(first_date.strftime("%d-%m-%Y"))
+    data.append(last_date.strftime("%d-%m-%Y"))
     data.append("{0:.2f}".format(difference) + "€")
     # XIRR
     c.execute('SELECT * FROM investment_movements WHERE fecha>=? and fecha<=? ', (first_date, last_date))
@@ -459,7 +459,7 @@ def investments():
     query = c.fetchall()
     for q in query:
         lista = []
-        lista.append(date_str_to_date(q[1]).strftime("%-d-%-m-%Y"))
+        lista.append(date_str_to_date(q[1]).strftime("%d-%m-%Y"))
         lista.append("{0:.2f}".format(q[2]) + "€")
         lista.append(q[3])
         lista.append(q[4])

@@ -5,3 +5,5 @@
 /upgrade_app.sh
 /venv/
 /.flaskenv
+/logs/
+/app.db

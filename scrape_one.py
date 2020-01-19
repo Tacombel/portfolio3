@@ -1,6 +1,6 @@
 # python3
 
-# para que descarge pasar como argumento el activo_id
+# para que descargue pasar como argumento el activo_id
 # este modulo no actualiza la base de datos, solo descarga
 
 import sqlite3
@@ -18,7 +18,7 @@ def webdriver_(url):
     if platform.system() == 'Windows':
         path = 'C:/Users/Daniel/PycharmProjects/portfolio3/chromedriver/chromedriver.exe'
     else:
-        path = '/microservicios/proyectos/portfolio3/chromedriver'
+        path = '/home/microservices/microservices/portfolio3/chromedriver/chromedriver'
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     # This option is necessary to avoid an error when running as a service

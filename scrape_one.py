@@ -8,17 +8,22 @@ from selenium import webdriver
 from lxml import html
 import sys
 import datetime
+import platform
 
 conn = sqlite3.connect('app.db')
 c = conn.cursor()
 
 
 def webdriver_(url):
+    if platform.system() == 'Windows':
+        path = 'C:/Users/Daniel/PycharmProjects/portfolio3/chromedriver/chromedriver.exe'
+    else:
+        path = '/microservicios/proyectos/portfolio3/chromedriver'
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     # This option is necessary to avoid an error when running as a service
     options.add_argument("--no-sandbox")
-    driver = webdriver.Chrome(chrome_options=options)
+    driver = webdriver.Chrome(chrome_options=options, executable_path=path)
     driver.get(url)
     tree = html.fromstring(driver.page_source)
     driver.quit()

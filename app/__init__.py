@@ -47,6 +47,6 @@ if not app.debug:
     app.logger.addHandler(file_handler)
 
     app.logger.setLevel(logging.INFO)
-    app.logger.info('Porfolio2 startup')
+    app.logger.info('Porfolio3 startup')
 
 from app import routes, models # noqa

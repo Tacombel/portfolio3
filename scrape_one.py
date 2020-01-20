@@ -9,6 +9,7 @@ from lxml import html
 import sys
 import datetime
 import platform
+import requests
 
 conn = sqlite3.connect('app.db')
 c = conn.cursor()
@@ -24,6 +25,8 @@ def webdriver_(url):
     # This option is necessary to avoid an error when running as a service
     options.add_argument("--no-sandbox")
     driver = webdriver.Chrome(chrome_options=options, executable_path=path)
+    response = requests.get(url)
+    print('Status code:', response.status_code)
     driver.get(url)
     tree = html.fromstring(driver.page_source)
     driver.quit()

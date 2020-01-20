@@ -36,7 +36,7 @@ def webdriver_(url):
 def scrape(activo_id):
     c.execute("SELECT * FROM activo WHERE id =?", (str(activo_id),))
     e = c.fetchone()
-    print("Scraping", e[4], flush=True)
+    print("Scraping", e[4], 'Id:', activo_id, flush=True)
     tree = webdriver_(e[4])
     date_old = False
 
@@ -151,6 +151,8 @@ def scrape(activo_id):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Number of arguments must be 1", flush=True)
-    print(scrape(sys.argv[1]))
+    for index, e in enumerate(sys.argv):
+        if index == 0:
+            continue
+        print('-----------------------------------------------------------------')
+        scrape(e)

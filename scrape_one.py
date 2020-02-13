@@ -46,10 +46,10 @@ def scrape(activo_id):
         vl_xpath = '//*[@id="overviewQuickstatsDiv"]/table/tbody/tr[2]/td[3]/text()'
         date = tree.xpath(date_xpath)
         VL = tree.xpath(vl_xpath)
-        date, VL = date[0], VL[0]
         if len(date) == 0 or len(VL) == 0:
             print('No data', flush=True)
             return -1, -1
+        date, VL = date[0], VL[0]
         day = int(date[0:2])
         month = int(date[3:5])
         year = int(date[6:])
@@ -127,7 +127,7 @@ def scrape(activo_id):
         VL = tree.xpath(vl_xpath)
         date_old = tree.xpath(date_xpath_old)
         VL_old = tree.xpath(vl_xpath_old)
-        if len(date) == 0 or len(VL) == 0 or len(date_old) == 0 or len(VL_old) == 0:
+        if len(date) == 0 or len(VL) == 0 or len(date_old) == 0 or len(VL_old) == 0 or VL[0] == '-' or VL_old[0] == '-':
             print('No data', flush=True)
             return -1, -1, -1, -1
         date, VL, date_old, VL_old = date[0], VL[0], date_old[0], VL_old[0]

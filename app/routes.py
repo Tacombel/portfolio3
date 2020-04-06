@@ -8,7 +8,7 @@ from app.email import send_password_reset_email
 import sqlite3
 import XIRR
 import datetime
-import time
+from scrape import look_for_data
 
 
 def add_asset_units(calculation_date):
@@ -176,9 +176,7 @@ def index():
     conn = sqlite3.connect('app.db')
     c = conn.cursor()
     if request.method == 'POST':
-        current_time = time.time()
-        c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("next_scrape", current_time))
-        conn.commit()
+        look_for_data()
     response = []
     c.execute('SELECT * FROM activo WHERE descargar=? ORDER BY nombre', (1,))
     query = c.fetchall()

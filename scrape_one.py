@@ -34,6 +34,8 @@ def webdriver_(url):
 
 
 def scrape(activo_id):
+    conn = sqlite3.connect('app.db')
+    c = conn.cursor()
     c.execute("SELECT * FROM activo WHERE id =?", (str(activo_id),))
     e = c.fetchone()
     print("Scraping", e[4], 'Id:', activo_id, flush=True)

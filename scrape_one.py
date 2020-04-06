@@ -11,9 +11,6 @@ import datetime
 import platform
 import requests
 
-conn = sqlite3.connect('app.db')
-c = conn.cursor()
-
 
 def webdriver_(url):
     if platform.system() == 'Windows':

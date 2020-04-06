@@ -5,25 +5,6 @@ import time
 from scrape_one import scrape
 
 
-# Initial setup
-
-conn = sqlite3.connect('app.db')
-c = conn.cursor()
-
-c.execute("SELECT * from variables WHERE name=?", ("next_scrape",))
-query = c.fetchone()
-if query is None:
-    current_time = time.time()
-    c.execute("INSERT INTO variables (name, value) VALUES (?,?)", ("next_scrape", current_time))
-c.execute("SELECT * from variables WHERE name=?", ("scrape_interval",))
-query = c.fetchone()
-if query is None:
-    c.execute("INSERT INTO variables (name, value) VALUES (?,?)", ("scrape_interval", 6590))
-conn.commit()
-
-# End initial setup
-
-
 def look_for_data():
     conn = sqlite3.connect('app.db')
     c = conn.cursor()

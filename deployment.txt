@@ -1,5 +1,8 @@
 Installation steps Ubuntu
 
+Instalo dependencias genéricas
+$sudo apt-get install build-essential autoconf libtool pkg-config python-opengl python-pil python-pyrex python-pyside.qtopengl idle-python2.7 qt4-dev-tools qt4-designer libqtgui4 libqtcore4 libqt4-xml libqt4-test libqt4-script libqt4-network libqt4-dbus python-qt4 python-qt4-gl libgle3 python-dev
+
 $sudo adduser portfolio
 switch to user portfolio
 $mkdir /home/portfolio/portfolio
@@ -12,7 +15,8 @@ $python3 -m venv venv
 $source venv/bin/activate
 $pip install -r requirements.txt
 A veces falla la instalación masiva y hay que instalar los módulos uno a uno
-No se porque selenium, lxml no aparece el requirements.txt
+No se porque selenium, lxml, jwt no aparece el requirements.txt
+El lxml ha tardado muchisimo en instalarse
 $sudo apt-get install chromium-browser
 
 Creamos la ficha del servicio

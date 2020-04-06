@@ -78,7 +78,7 @@ def look_for_data():
                 print('Retry number', n, flush=True)
         else:
             current_time = time.time()
-            c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("next_scrape", current_time))
+            c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("last_scrape", current_time))
             conn.commit()
             print('Scrape finished', flush=True)
 

@@ -5,26 +5,9 @@ import time
 from scrape_one import scrape
 
 
-# Initial setup
-
-conn = sqlite3.connect('app.db')
-c = conn.cursor()
-
-c.execute("SELECT * from variables WHERE name=?", ("next_scrape",))
-query = c.fetchone()
-if query is None:
-    current_time = time.time()
-    c.execute("INSERT INTO variables (name, value) VALUES (?,?)", ("next_scrape", current_time))
-c.execute("SELECT * from variables WHERE name=?", ("scrape_interval",))
-query = c.fetchone()
-if query is None:
-    c.execute("INSERT INTO variables (name, value) VALUES (?,?)", ("scrape_interval", 6590))
-conn.commit()
-
-# End initial setup
-
-
 def look_for_data():
+    conn = sqlite3.connect('app.db')
+    c = conn.cursor()
     t = "1"
     candidates = []
     for row in c.execute("SELECT * FROM activo WHERE descargar =?", t):
@@ -75,22 +58,11 @@ def look_for_data():
                 time.sleep(60)
                 print('Retry number', n, flush=True)
         else:
+            current_time = time.time()
+            c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("last_scrape", current_time))
+            conn.commit()
             print('Scrape finished', flush=True)
 
 
 if __name__ == "__main__":
-    # This two lines force a scrape whenever the module is executed
-    current_time = time.time()
-    c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("next_scrape", current_time))
-    while True:
-        c.execute("SELECT * from variables WHERE name=?", ("next_scrape",))
-        query = c.fetchone()
-        current_time = time.time()
-        if current_time > float(query[1]):
-            look_for_data()
-            c.execute("SELECT * from variables WHERE name=?", ("scrape_interval",))
-            query = c.fetchone()
-            next_scrape = time.time() + float(query[1])
-            c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("next_scrape", next_scrape))
-            conn.commit()
-        time.sleep(5)
+    look_for_data()

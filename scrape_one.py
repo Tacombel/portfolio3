@@ -11,15 +11,13 @@ import datetime
 import platform
 import requests
 
-conn = sqlite3.connect('app.db')
-c = conn.cursor()
-
 
 def webdriver_(url):
     if platform.system() == 'Windows':
         path = 'C:/Users/Daniel/PycharmProjects/portfolio3/chromedriver/chromedriver.exe'
     else:
-        path = '/home/microservices/microservices/portfolio3/chromedriver/chromedriver'
+        # chromedriver para intel y chromedriver_ARM para raspberry
+        path = '/home/microservices/microservices/Portfolio3/chromedriver/chromedriver_ARM'
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     # This option is necessary to avoid an error when running as a service
@@ -34,6 +32,8 @@ def webdriver_(url):
 
 
 def scrape(activo_id):
+    conn = sqlite3.connect('app.db')
+    c = conn.cursor()
     c.execute("SELECT * FROM activo WHERE id =?", (str(activo_id),))
     e = c.fetchone()
     print("Scraping", e[4], 'Id:', activo_id, flush=True)

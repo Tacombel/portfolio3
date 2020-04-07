@@ -7,3 +7,4 @@
 /.flaskenv
 /logs/
 /app.db
+/update_server.bat

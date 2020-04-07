@@ -8,7 +8,8 @@ from app.email import send_password_reset_email
 import sqlite3
 import XIRR
 import datetime
-import time
+from scrape import look_for_data
+from config import Config
 
 
 def add_asset_units(calculation_date):
@@ -176,9 +177,7 @@ def index():
     conn = sqlite3.connect('app.db')
     c = conn.cursor()
     if request.method == 'POST':
-        current_time = time.time()
-        c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("next_scrape", current_time))
-        conn.commit()
+        look_for_data()
     response = []
     c.execute('SELECT * FROM activo WHERE descargar=? ORDER BY nombre', (1,))
     query = c.fetchall()
@@ -226,17 +225,16 @@ def index():
             response.append(line)
 
 
-    data = []
-    c.execute("SELECT * from variables WHERE name=?", ("next_scrape",))
+    c.execute("SELECT * from variables WHERE name=?", ("last_scrape",))
     query = c.fetchone()
-    next_scrape = int(float(query[1]))
-    c.execute("SELECT * from variables WHERE name=?", ("scrape_interval",))
-    query = c.fetchone()
-    scrape_interval = int(float(query[1]))
-    t_last = datetime.datetime.utcfromtimestamp(next_scrape - scrape_interval)
-    t_next = datetime.datetime.utcfromtimestamp(next_scrape)
-    data.append(t_last)
-    data.append(t_next)
+    if query is None:
+        last_scrape = 0
+    else:
+        last_scrape = int(float(query[1]))
+    scrape_interval = Config.JOBS[0]['seconds']
+    t_last = datetime.datetime.utcfromtimestamp(last_scrape)
+    t_next = datetime.datetime.utcfromtimestamp(last_scrape + scrape_interval)
+    data = [t_last, t_next]
 
     return render_template('index.html', title='Home', table=response, data=data)
 

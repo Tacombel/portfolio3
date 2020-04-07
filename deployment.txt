@@ -23,7 +23,7 @@ El lxml ha tardado muchisimo en instalarse
 $sudo apt-get install chromium-browser
 
 Creamos la ficha del servicio
-$su - daniel
+$su daniel
 $sudo nano /lib/systemd/system/portfolio3.service
 
 [Service]

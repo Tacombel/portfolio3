@@ -22,6 +22,10 @@ No se porque selenium, lxml, jwt no aparece el requirements.txt
 El lxml ha tardado muchisimo en instalarse
 $sudo apt-get install chromium-browser
 
+Copiar todos los ficheros necesarios
+Cambiar los permisos de chromedriver/chromedriver
+$chmod 777 chromedriver
+
 Creamos la ficha del servicio
 $su daniel
 $sudo nano /lib/systemd/system/portfolio3.service

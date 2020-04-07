@@ -16,7 +16,8 @@ def webdriver_(url):
     if platform.system() == 'Windows':
         path = 'C:/Users/Daniel/PycharmProjects/portfolio3/chromedriver/chromedriver.exe'
     else:
-        path = '/home/microservices/microservices/Portfolio3/chromedriver/chromedriver'
+        # chromedriver para intel y chromedriver_ARM para raspberry
+        path = '/home/microservices/microservices/Portfolio3/chromedriver/chromedriver_ARM'
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     # This option is necessary to avoid an error when running as a service

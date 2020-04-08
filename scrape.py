@@ -25,7 +25,7 @@ def look_for_data():
                 try:
                     date, VL = scrape(e[0])
                 except ValueError as e:
-                    print("Algo a fallado:", e, flush=True)
+                    print("Algo ha fallado:", e, flush=True)
                     continue
                 if date == -1:
                     continue
@@ -33,7 +33,7 @@ def look_for_data():
                 try:
                     date, VL, date_old, VL_old = scrape(e[0])
                 except ValueError as e:
-                    print("Algo a fallado:", e, flush=True)
+                    print("Algo ha fallado:", e, flush=True)
                     continue
                 if date == -1:
                     continue
@@ -57,11 +57,11 @@ def look_for_data():
             else:
                 time.sleep(60)
                 print('Retry number', n, flush=True)
-        else:
-            current_time = time.time()
-            c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("last_scrape", current_time))
-            conn.commit()
-            print('Scrape finished', flush=True)
+
+    current_time = time.time()
+    c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("last_scrape", current_time))
+    conn.commit()
+    print('Scrape finished', flush=True)
 
 
 if __name__ == "__main__":

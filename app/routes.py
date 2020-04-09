@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, url_for, request
-from app import app, db
+from app import app, db, scheduler
 from app.forms import LoginForm, RegistrationForm, ResetPasswordRequestForm, ResetPasswordForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User
@@ -176,12 +176,17 @@ def npv_calculation(calculation_date):
 def index():
     conn = sqlite3.connect('app.db')
     c = conn.cursor()
+
     if request.method == 'POST':
+        print(scheduler.get_job('job1'))
         look_for_data()
+        scheduler.delete_job('job1')
+        scheduler.add_job('job1', look_for_data, trigger='interval',
+            seconds=Config.JOBS[0]['seconds'])
+
     response = []
     c.execute('SELECT * FROM activo WHERE descargar=? ORDER BY nombre', (1,))
     query = c.fetchall()
-
     for q in query:
         c.execute('SELECT * FROM cotizacion WHERE activo_id=? ORDER BY fecha DESC LIMIT 2', (q[0],))
         data = c.fetchall()
@@ -226,6 +231,8 @@ def index():
 
 
     c.execute("SELECT * from variables WHERE name=?", ("last_scrape",))
+    text = scheduler.get_job('job1')
+    print(text)
     query = c.fetchone()
     if query is None:
         last_scrape = 0

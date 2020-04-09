@@ -178,11 +178,9 @@ def index():
     c = conn.cursor()
 
     if request.method == 'POST':
-        print(scheduler.get_job('job1'))
         look_for_data()
         scheduler.delete_job('job1')
-        scheduler.add_job('job1', look_for_data, trigger='interval',
-            seconds=Config.JOBS[0]['seconds'])
+        scheduler.add_job('job1', look_for_data, trigger='interval', seconds=Config.JOBS[0]['seconds'])
 
     response = []
     c.execute('SELECT * FROM activo WHERE descargar=? ORDER BY nombre', (1,))
@@ -229,18 +227,15 @@ def index():
             line.append(variation)
             response.append(line)
 
-
     c.execute("SELECT * from variables WHERE name=?", ("last_scrape",))
-    text = scheduler.get_job('job1')
-    print(text)
     query = c.fetchone()
     if query is None:
         last_scrape = 0
     else:
         last_scrape = int(float(query[1]))
-    scrape_interval = Config.JOBS[0]['seconds']
+    next_run_time_epoch = scheduler.get_job('job1').next_run_time.timestamp()
     t_last = datetime.datetime.utcfromtimestamp(last_scrape)
-    t_next = datetime.datetime.utcfromtimestamp(last_scrape + scrape_interval)
+    t_next = datetime.datetime.utcfromtimestamp(next_run_time_epoch)
     data = [t_last, t_next]
 
     return render_template('index.html', title='Home', table=response, data=data)

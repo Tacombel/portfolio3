@@ -10,14 +10,18 @@ import sys
 import datetime
 import platform
 import requests
+import os
 
 
 def webdriver_(url):
+    cwd = os.getcwd()
     if platform.system() == 'Windows':
-        path = 'C:/Users/Daniel/PycharmProjects/portfolio3/chromedriver/chromedriver.exe'
+        path = cwd + '\chromedriver\chromedriver.exe'
+        print(path)
     else:
         # chromedriver para intel y chromedriver_ARM para raspberry
-        path = '/home/microservicios/portfolio3/chromedriver/chromedriver_ARM'
+        path = cwd + '/chromedriver/chromedriver_ARM'
+        print(path)
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     # This option is necessary to avoid an error when running as a service
@@ -151,8 +155,11 @@ def scrape(activo_id):
 
 
 if __name__ == "__main__":
-    for index, e in enumerate(sys.argv):
-        if index == 0:
-            continue
-        print('-----------------------------------------------------------------')
-        scrape(e)
+    if sys.argv:
+        for index, e in enumerate(sys.argv):
+            if index == 0:
+                continue
+            print('-----------------------------------------------------------------')
+            scrape(e)
+    else:
+        scrape(4)

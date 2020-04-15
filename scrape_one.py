@@ -17,11 +17,9 @@ def webdriver_(url):
     cwd = os.getcwd()
     if platform.system() == 'Windows':
         path = cwd + '\chromedriver\chromedriver.exe'
-        print(path)
     else:
         # chromedriver para intel y chromedriver_ARM para raspberry
         path = cwd + '/chromedriver/chromedriver_ARM'
-        print(path)
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     # This option is necessary to avoid an error when running as a service

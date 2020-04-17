@@ -42,8 +42,7 @@ def look_for_data():
             else:
                 if date_old:
                     c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)", (date_old, VL_old, e[0],))
-                else:
-                    c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)", (date, VL, e[0],))
+                c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)", (date, VL, e[0],))
 
             remove.append(index)
         conn.commit()

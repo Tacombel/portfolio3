@@ -37,7 +37,7 @@ def look_for_data():
                     continue
                 if date == -1:
                     continue
-            if VL == '-':
+            if '-' in VL:
                 print('VL es un -')
             else:
                 if date_old:

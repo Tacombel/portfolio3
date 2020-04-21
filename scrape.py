@@ -6,6 +6,7 @@ from scrape_one import scrape
 
 
 def look_for_data():
+    hora_de_inicio = time.time()
     conn = sqlite3.connect('app.db')
     c = conn.cursor()
     t = "1"
@@ -65,6 +66,8 @@ def look_for_data():
     c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("last_scrape", current_time))
     conn.commit()
     print('Scrape finished', flush=True)
+    duracion = (time.time() - hora_de_inicio) / 60
+    print('Duración de la descarga: ', '{:.2f}'.format(duracion), ' minutos')
 
 
 if __name__ == "__main__":

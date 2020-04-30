@@ -67,7 +67,7 @@ def look_for_data():
     conn.commit()
     print('Scrape finished', flush=True)
     duracion = (time.time() - hora_de_inicio) / 60
-    print('Duración de la descarga: ', '{:.2f}'.format(duracion), ' minutos')
+    print('Duración de la descarga: ', '{:.2f}'.format(duracion), ' minutos', flush=True)
 
 
 if __name__ == "__main__":

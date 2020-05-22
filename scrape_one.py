@@ -25,7 +25,8 @@ def webdriver_(url):
     # This option is necessary to avoid an error when running as a service
     options.add_argument("--no-sandbox")
     driver = webdriver.Chrome(chrome_options=options, executable_path=path)
-    response = requests.get(url)
+    session = requests.Session()
+    response = session.get(url)
     print('Status code:', response.status_code)
     driver.get(url)
     tree = html.fromstring(driver.page_source)

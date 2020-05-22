@@ -3,10 +3,10 @@
 import sqlite3
 import time
 from scrape_one import scrape
+import concurrent.futures
 
 
 def look_for_data():
-    hora_de_inicio = time.time()
     conn = sqlite3.connect('app.db')
     c = conn.cursor()
     t = "1"
@@ -65,10 +65,27 @@ def look_for_data():
     current_time = time.time()
     c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("last_scrape", current_time))
     conn.commit()
-    print('Scrape finished', flush=True)
-    duracion = (time.time() - hora_de_inicio) / 60
-    print('Duración de la descarga: ', '{:.2f}'.format(duracion), ' minutos', flush=True)
 
 
 if __name__ == "__main__":
-    look_for_data()
+    hora_de_inicio = time.time()
+
+    conn = sqlite3.connect('app.db')
+    c = conn.cursor()
+
+    candidates = []
+    for row in c.execute("SELECT * FROM activo WHERE descargar =?", '1'):
+        # 0: Id, 3:tipo, 4:url
+        candidates.append(row[0])
+
+    print('Scrapeando ', len(candidates), ' valores')
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        futures = executor.map(scrape, candidates)
+
+    for future in futures:
+        print(future)
+
+    duracion = (time.time() - hora_de_inicio) / 60
+    print('Duración de la descarga: ', '{:.2f}'.format(duracion), ' minutos', flush=True)
+    print('Scrape finished', flush=True)

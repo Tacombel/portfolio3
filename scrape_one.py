@@ -11,9 +11,12 @@ import datetime
 import platform
 import requests
 import os
+import logging
+
+log = logging.getLogger(__name__)
 
 
-def webdriver_(url):
+def descargar_pagina(url):
     cwd = os.getcwd()
     # chromedriver para intel y chromedriver_ARM para raspberry
     if platform.system() == 'Windows':
@@ -27,11 +30,10 @@ def webdriver_(url):
     driver = webdriver.Chrome(chrome_options=options, executable_path=path)
     session = requests.Session()
     response = session.get(url)
-    print('Status code:', response.status_code)
     driver.get(url)
     tree = html.fromstring(driver.page_source)
     driver.quit()
-    return tree
+    return tree, response.status_code
 
 
 def scrape(activo_id):
@@ -39,8 +41,8 @@ def scrape(activo_id):
     c = conn.cursor()
     c.execute("SELECT * FROM activo WHERE id =?", (str(activo_id),))
     e = c.fetchone()
-    print("Scraping", e[4], 'Id:', activo_id, flush=True)
-    tree = webdriver_(e[4])
+
+    tree, status_code = descargar_pagina(e[4])
     date_old = False
 
     # www.morningstar.es
@@ -50,7 +52,7 @@ def scrape(activo_id):
         date = tree.xpath(date_xpath)
         VL = tree.xpath(vl_xpath)
         if len(date) == 0 or len(VL) == 0:
-            print('No data', flush=True)
+            log.debug('No data')
             return -1, -1
         date, VL = date[0], VL[0]
         day = int(date[0:2])
@@ -71,7 +73,7 @@ def scrape(activo_id):
         date_old = tree.xpath(date_xpath_old)
         VL_old = tree.xpath(vl_xpath_old)
         if len(date) == 0 or len(VL) == 0 or len(date_old) == 0 or len(VL_old) == 0:
-            print('No data', flush=True)
+            log.debug('No data')
             return -1, -1, -1, -1
         date, VL, date_old, VL_old = date[0], VL[0], date_old[0], VL_old[0]
         day = int(date[0:2])
@@ -94,7 +96,7 @@ def scrape(activo_id):
         VL = tree.xpath(vl_xpath)
         date, VL = date[0], VL[0]
         if len(date) == 0 or len(VL) == 0:
-            print('No data', flush=True)
+            log.debug('No data')
             return -1, -1
         date = date[42:52]
         day = int(date[0:2])
@@ -111,7 +113,7 @@ def scrape(activo_id):
         date = tree.xpath(date_xpath)
         VL = tree.xpath(vl_xpath)
         if len(date) == 0 or len(VL) == 0:
-            print('No data', flush=True)
+            log.debug('No data')
             return -1, -1
         date, VL = date[0], VL[0]
         day = int(date[0:2])
@@ -131,7 +133,7 @@ def scrape(activo_id):
         date_old = tree.xpath(date_xpath_old)
         VL_old = tree.xpath(vl_xpath_old)
         if len(date) == 0 or len(VL) == 0 or len(date_old) == 0 or len(VL_old) == 0 or VL[0] == '-' or VL_old[0] == '-':
-            print('No data', flush=True)
+            log.debug('No data')
             return -1, -1, -1, -1
         date, VL, date_old, VL_old = date[0], VL[0], date_old[0], VL_old[0]
         day = int(date[0:2])
@@ -145,20 +147,23 @@ def scrape(activo_id):
         date_old = datetime.date(year_old, month_old, day_old)
         VL_old = VL_old.replace(",", ".")
 
+    log.debug("Scraping", e[4], 'Id:', activo_id)
+    log.debug('Status code:', status_code)
     if date_old:
-        print(date, VL, date_old, VL_old, flush=True)
+        log.debug(date, VL, date_old, VL_old)
         return date, VL, date_old, VL_old
     else:
-        print(date, VL, flush=True)
+        log.debug(date, VL)
         return date, VL
 
 
 if __name__ == "__main__":
+    log.setLevel(logging.DEBUG)
     if sys.argv:
         for index, e in enumerate(sys.argv):
             if index == 0:
                 continue
-            print('-----------------------------------------------------------------')
+            log.debug('-----------------------------------------------------------------')
             scrape(e)
     else:
         scrape(4)

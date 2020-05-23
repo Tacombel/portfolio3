@@ -34,24 +34,17 @@ def descargar_pagina(url):
     return tree, response.status_code
 
 
-def scrape(activo_id):
-    conn = sqlite3.connect('app.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM activo WHERE id =?", (str(activo_id),))
-    e = c.fetchone()
-
-    tree, status_code = descargar_pagina(e[4])
-    date_old = False
-
+def variantes(e, tree):
+    VL_old = False
     # www.morningstar.es
-    if e[3] == 0:
+    if e == 0:
         date_xpath = '//*[@id="overviewQuickstatsDiv"]/table/tbody/tr[2]/td[1]/span/text()'
         vl_xpath = '//*[@id="overviewQuickstatsDiv"]/table/tbody/tr[2]/td[3]/text()'
         date = tree.xpath(date_xpath)
         VL = tree.xpath(vl_xpath)
         if len(date) == 0 or len(VL) == 0:
             logging.info('No data')
-            return -1, -1
+            return 'No data'
         date, VL = date[0], VL[0]
         day = int(date[0:2])
         month = int(date[3:5])
@@ -61,7 +54,7 @@ def scrape(activo_id):
         VL = VL.replace(",", ".")
 
     # es.investing.com
-    if e[3] == 1:
+    if e == 1:
         date_xpath = '//*[@id="curr_table"]/tbody/tr[1]/td[1]/text()'
         vl_xpath = '//*[@id="curr_table"]/tbody/tr[1]/td[2]/text()'
         date_xpath_old = '//*[@id="curr_table"]/tbody/tr[2]/td[1]/text()'
@@ -72,7 +65,7 @@ def scrape(activo_id):
         VL_old = tree.xpath(vl_xpath_old)
         if len(date) == 0 or len(VL) == 0 or len(date_old) == 0 or len(VL_old) == 0:
             logging.info('No data')
-            return -1, -1, -1, -1
+            return 'No data'
         date, VL, date_old, VL_old = date[0], VL[0], date_old[0], VL_old[0]
         day = int(date[0:2])
         month = int(date[3:5])
@@ -87,7 +80,7 @@ def scrape(activo_id):
 
     # portal4.lacaixa.es
     # No funciona y no esta probado con los últimos cambios
-    if e[3] == 2:
+    if e == 2:
         date_xpath = '//*[@id="tabla_datos_generales"]/tbody/tr[4]/th/text()'
         vl_xpath = '//*[@id="tabla_datos_generales"]/tbody/tr[4]/td/text()'
         date = tree.xpath(date_xpath)
@@ -95,7 +88,7 @@ def scrape(activo_id):
         date, VL = date[0], VL[0]
         if len(date) == 0 or len(VL) == 0:
             logging.info('No data')
-            return -1, -1
+            return 'No data'
         date = date[42:52]
         day = int(date[0:2])
         month = int(date[3:5])
@@ -105,14 +98,14 @@ def scrape(activo_id):
         VL = VL.replace(",", ".")
 
     # www.quefondos.com
-    if e[3] == 3:
+    if e == 3:
         date_xpath = '//*[@id="col3_content"]/div/div[4]/p[3]/span[2]/text()'
         vl_xpath = '//*[@id="col3_content"]/div/div[4]/p[1]/span[2]/text()'
         date = tree.xpath(date_xpath)
         VL = tree.xpath(vl_xpath)
         if len(date) == 0 or len(VL) == 0:
             logging.info('No data')
-            return -1, -1
+            return 'No data'
         date, VL = date[0], VL[0]
         day = int(date[0:2])
         month = int(date[3:5])
@@ -121,7 +114,7 @@ def scrape(activo_id):
         VL = VL.split()[0]
         VL = VL.replace(",", ".")
     # www.bolsademadrid.es
-    if e[3] == 4:
+    if e == 4:
         date_xpath = '//*[@id="ctl00_Contenido_tblPrecios"]/tbody/tr[2]/td[1]/text()'
         vl_xpath = '//*[@id="ctl00_Contenido_tblPrecios"]/tbody/tr[2]/td[6]/text()'
         date_xpath_old = '//*[@id="ctl00_Contenido_tblPrecios"]/tbody/tr[3]/td[1]/text()'
@@ -131,8 +124,8 @@ def scrape(activo_id):
         date_old = tree.xpath(date_xpath_old)
         VL_old = tree.xpath(vl_xpath_old)
         if len(date) == 0 or len(VL) == 0 or len(date_old) == 0 or len(VL_old) == 0 or VL[0] == '-' or VL_old[0] == '-':
-            logging.info('No data')
-            return -1, -1, -1, -1
+            data = ['No data']
+            return data
         date, VL, date_old, VL_old = date[0], VL[0], date_old[0], VL_old[0]
         day = int(date[0:2])
         month = int(date[3:5])
@@ -145,15 +138,36 @@ def scrape(activo_id):
         date_old = datetime.date(year_old, month_old, day_old)
         VL_old = VL_old.replace(",", ".")
 
+    if '-' in VL:
+        data= ['VL es un -']
+        return data
+    elif not VL_old:
+        data = [date, VL]
+    else:
+        data = [date, VL, date_old, VL_old]
+
+    return data
+
+
+def scrape(activo_id):
+    conn = sqlite3.connect('app.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM activo WHERE id =?", (str(activo_id),))
+    e = c.fetchone()
+
+    tree, status_code = descargar_pagina(e[4])
+    data = variantes(e[3], tree)
+
     logging.info("Scraping %s Id: %s", e[4], activo_id)
     logging.info('Status code: %s', str(status_code))
-    if date_old:
-        logging.info('%s %r %t %y', str(date), str(VL), str(date_old), str(VL_old))
-        return date, VL, date_old, VL_old
-    else:
-        logging.info('%s %r', str(date), str(VL))
-        return date, VL
-
+    if len(data) == 4:
+        logging.info('%s %s %s %s', str(data[0]), str(data[1]), str(data[2]), str(data[3]))
+    elif len(data) == 2:
+        logging.info('%s %s', str(data[0]), str(data[1]))
+    elif len(data) == 1:
+        logging.info('%s', data[0])
+    data.append(activo_id)
+    return data
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

@@ -62,9 +62,7 @@ def look_for_data():
                 time.sleep(60)
                 print('Retry number', n, flush=True)
 
-    current_time = time.time()
-    c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("last_scrape", current_time))
-    conn.commit()
+
 
 
 if __name__ == "__main__":
@@ -78,13 +76,24 @@ if __name__ == "__main__":
         # 0: Id, 3:tipo, 4:url
         candidates.append(row[0])
 
-    print('Scrapeando ', len(candidates), ' valores')
+    n = 0
+    while n < 5:
+        print('Scrapeando ', len(candidates), ' valores')
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            futures = executor.map(scrape, candidates)
+        for future in futures:
+            print(future)
+            if len(future) > 2:
+                candidates.remove(future[-1])
+        print(candidates)
+        if len(candidates) == 0:
+            break
+        n += 1
+        time.sleep(30)
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-        futures = executor.map(scrape, candidates)
-
-    for future in futures:
-        print(future)
+    current_time = time.time()
+    c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("last_scrape", current_time))
+    conn.commit()
 
     duracion = (time.time() - hora_de_inicio) / 60
     print('Duración de la descarga: ', '{:.2f}'.format(duracion), ' minutos', flush=True)

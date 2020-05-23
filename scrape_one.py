@@ -13,8 +13,6 @@ import requests
 import os
 import logging
 
-log = logging.getLogger(__name__)
-
 
 def descargar_pagina(url):
     cwd = os.getcwd()
@@ -52,7 +50,7 @@ def scrape(activo_id):
         date = tree.xpath(date_xpath)
         VL = tree.xpath(vl_xpath)
         if len(date) == 0 or len(VL) == 0:
-            log.debug('No data')
+            logging.info('No data')
             return -1, -1
         date, VL = date[0], VL[0]
         day = int(date[0:2])
@@ -73,7 +71,7 @@ def scrape(activo_id):
         date_old = tree.xpath(date_xpath_old)
         VL_old = tree.xpath(vl_xpath_old)
         if len(date) == 0 or len(VL) == 0 or len(date_old) == 0 or len(VL_old) == 0:
-            log.debug('No data')
+            logging.info('No data')
             return -1, -1, -1, -1
         date, VL, date_old, VL_old = date[0], VL[0], date_old[0], VL_old[0]
         day = int(date[0:2])
@@ -96,7 +94,7 @@ def scrape(activo_id):
         VL = tree.xpath(vl_xpath)
         date, VL = date[0], VL[0]
         if len(date) == 0 or len(VL) == 0:
-            log.debug('No data')
+            logging.info('No data')
             return -1, -1
         date = date[42:52]
         day = int(date[0:2])
@@ -113,7 +111,7 @@ def scrape(activo_id):
         date = tree.xpath(date_xpath)
         VL = tree.xpath(vl_xpath)
         if len(date) == 0 or len(VL) == 0:
-            log.debug('No data')
+            logging.info('No data')
             return -1, -1
         date, VL = date[0], VL[0]
         day = int(date[0:2])
@@ -133,7 +131,7 @@ def scrape(activo_id):
         date_old = tree.xpath(date_xpath_old)
         VL_old = tree.xpath(vl_xpath_old)
         if len(date) == 0 or len(VL) == 0 or len(date_old) == 0 or len(VL_old) == 0 or VL[0] == '-' or VL_old[0] == '-':
-            log.debug('No data')
+            logging.info('No data')
             return -1, -1, -1, -1
         date, VL, date_old, VL_old = date[0], VL[0], date_old[0], VL_old[0]
         day = int(date[0:2])
@@ -147,23 +145,20 @@ def scrape(activo_id):
         date_old = datetime.date(year_old, month_old, day_old)
         VL_old = VL_old.replace(",", ".")
 
-    log.debug("Scraping", e[4], 'Id:', activo_id)
-    log.debug('Status code:', status_code)
+    logging.info("Scraping %s Id: %s", e[4], activo_id)
+    logging.info('Status code: %s', str(status_code))
     if date_old:
-        log.debug(date, VL, date_old, VL_old)
+        logging.info('%s %r %t %y', str(date), str(VL), str(date_old), str(VL_old))
         return date, VL, date_old, VL_old
     else:
-        log.debug(date, VL)
+        logging.info('%s %r', str(date), str(VL))
         return date, VL
 
 
 if __name__ == "__main__":
-    log.setLevel(logging.DEBUG)
-    if sys.argv:
-        for index, e in enumerate(sys.argv):
-            if index == 0:
-                continue
-            log.debug('-----------------------------------------------------------------')
-            scrape(e)
-    else:
-        scrape(4)
+    logging.basicConfig(level=logging.INFO)
+    for index, e in enumerate(sys.argv):
+        if index == 0:
+            continue
+        logging.info('-----------------------------------------------------------------')
+        scrape(e)

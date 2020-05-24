@@ -166,6 +166,7 @@ def scrape(activo_id):
         logging.info('%s %s', str(data[0]), str(data[1]))
     elif len(data) == 1:
         logging.info('%s', data[0])
+    data.append(status_code)
     data.append(activo_id)
     return data
 

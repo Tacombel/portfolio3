@@ -27,11 +27,11 @@ def look_for_data():
             futures = executor.map(scrape, candidates)
         for future in futures:
             print(future)
-            if len(future) == 5:
+            if len(future) == 6:
                 c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)",
                           (future[2], future[3], future[-1],))
                 conn.commit()
-            if len(future) >= 3:
+            if len(future) >= 4:
                 c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)",
                           (future[0], future[1], future[-1],))
                 conn.commit()

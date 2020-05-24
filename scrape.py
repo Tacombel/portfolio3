@@ -19,7 +19,10 @@ def look_for_data():
     n = 1
     while True:
         hora_de_inicio = time.time()
-        print('Scrapeando ', len(candidates), ' valores. Intento número', n)
+        if len(candidates) == 1:
+            print('Scrapeando ', len(candidates), 'valor. Intento número', n)
+        else:
+            print('Scrapeando ', len(candidates), 'valores. Intento número', n)
         with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
             futures = executor.map(scrape, candidates)
         for future in futures:
@@ -27,11 +30,8 @@ def look_for_data():
             if len(future) == 5:
                 c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)",
                           (future[2], future[3], future[-1],))
-                c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)",
-                          (future[0], future[1], future[-1],))
                 conn.commit()
-                candidates.remove(future[-1])
-            elif len(future) == 3:
+            if len(future) >= 3:
                 c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)",
                           (future[0], future[1], future[-1],))
                 conn.commit()
@@ -39,14 +39,14 @@ def look_for_data():
         duracion = (time.time() - hora_de_inicio) / 60
         if duracion < 1:
             duracion = duracion * 60
-            print('Duración de la descarga: ', '{:.2f}'.format(duracion), ' segundos', flush=True)
+            print('Duración de la descarga: ', '{:.2f}'.format(duracion), 'segundos', flush=True)
         else:
-            print('Duración de la descarga: ', '{:.2f}'.format(duracion), ' minutos', flush=True)
+            print('Duración de la descarga: ', '{:.2f}'.format(duracion), 'minutos', flush=True)
 
         if len(candidates) == 0:
             break
         n += 1
-        if n < 5:
+        if n < 4:
             print('---Los siguientes valores han dado error y se volvera a intentar: ', candidates)
         else:
             print('Demasiados reintentos. Abortando')

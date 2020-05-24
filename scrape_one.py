@@ -159,13 +159,13 @@ def scrape(activo_id):
         logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
         return data
     tree, status_code = descargar_pagina(e[4])
+    logging.info("Scraping %s Id: %s", e[4], activo_id)
+    logging.info('Status code: %s', str(status_code))
     if status_code == 404:
         data = ['Error', 'La página no existe. Status_code: 404', activo_id]
         logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
         return data
     data = variantes(e[3], tree)
-    logging.info("Scraping %s Id: %s", e[4], activo_id)
-    logging.info('Status code: %s', str(status_code))
     if len(data) == 4:
         logging.info('%s %s %s %s', str(data[0]), str(data[1]), str(data[2]), str(data[3]))
     elif len(data) == 2:

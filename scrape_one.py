@@ -172,8 +172,13 @@ def scrape(activo_id):
         logging.info('%s %s', str(data[0]), str(data[1]))
     elif len(data) == 1:
         logging.info('%s', data[0])
-    data.append(status_code)
-    data.append(activo_id)
+    if data:
+        data.append(status_code)
+        data.append(activo_id)
+    else:
+        data = ['Error', 'data no se ha creado. Status_code: ' + status_code, activo_id]
+        logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
+        return data
     return data
 
 if __name__ == "__main__":

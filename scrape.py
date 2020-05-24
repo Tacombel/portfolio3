@@ -24,7 +24,7 @@ def look_for_data():
             print('Scrapeando ', len(candidates), 'valor. Intento número', n)
         else:
             print('Scrapeando ', len(candidates), 'valores. Intento número', n)
-        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
             futures = executor.map(scrape, candidates)
         for future in futures:
             print(future)

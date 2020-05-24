@@ -12,7 +12,8 @@ def look_for_data():
     c = conn.cursor()
 
     candidates = []
-    for row in c.execute("SELECT * FROM activo WHERE descargar =?", '1'):
+    # for row in c.execute("SELECT * FROM activo WHERE descargar =?", '1'):
+    for row in c.execute("SELECT * FROM activo"):
         # 0: Id, 3:tipo, 4:url
         candidates.append(row[0])
 
@@ -23,7 +24,7 @@ def look_for_data():
             print('Scrapeando ', len(candidates), 'valor. Intento número', n)
         else:
             print('Scrapeando ', len(candidates), 'valores. Intento número', n)
-        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=11) as executor:
             futures = executor.map(scrape, candidates)
         for future in futures:
             print(future)
@@ -35,6 +36,8 @@ def look_for_data():
                 c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)",
                           (future[0], future[1], future[-1],))
                 conn.commit()
+                candidates.remove(future[-1])
+            if len(future) == 3 and future[0] == 'Error':
                 candidates.remove(future[-1])
         duracion = (time.time() - hora_de_inicio) / 60
         if duracion < 1:

@@ -20,7 +20,8 @@ def look_for_data():
 
     n = 1
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+    # ajusto maxworkers a 3 porque la raspberry no puede con mas
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         while True:
             hora_de_inicio = time.time()
             if len(candidates) == 1:

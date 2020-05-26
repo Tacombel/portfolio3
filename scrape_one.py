@@ -43,8 +43,8 @@ def variantes(e, tree):
         date = tree.xpath(date_xpath)
         VL = tree.xpath(vl_xpath)
         if len(date) == 0 or len(VL) == 0:
-            logging.info('No data')
-            return 'No data'
+            data = ['No data']
+            return data
         date, VL = date[0], VL[0]
         day = int(date[0:2])
         month = int(date[3:5])
@@ -64,8 +64,8 @@ def variantes(e, tree):
         date_old = tree.xpath(date_xpath_old)
         VL_old = tree.xpath(vl_xpath_old)
         if len(date) == 0 or len(VL) == 0 or len(date_old) == 0 or len(VL_old) == 0:
-            logging.info('No data')
-            return 'No data'
+            data = ['No data']
+            return data'
         date, VL, date_old, VL_old = date[0], VL[0], date_old[0], VL_old[0]
         day = int(date[0:2])
         month = int(date[3:5])
@@ -87,8 +87,8 @@ def variantes(e, tree):
         VL = tree.xpath(vl_xpath)
         date, VL = date[0], VL[0]
         if len(date) == 0 or len(VL) == 0:
-            logging.info('No data')
-            return 'No data'
+            data = ['No data']
+            return data
         date = date[42:52]
         day = int(date[0:2])
         month = int(date[3:5])
@@ -104,8 +104,8 @@ def variantes(e, tree):
         date = tree.xpath(date_xpath)
         VL = tree.xpath(vl_xpath)
         if len(date) == 0 or len(VL) == 0:
-            logging.info('No data')
-            return 'No data'
+            data = ['No data']
+            return data
         date, VL = date[0], VL[0]
         day = int(date[0:2])
         month = int(date[3:5])

@@ -11,6 +11,7 @@ def look_for_data():
     conn = sqlite3.connect('app.db')
     c = conn.cursor()
 
+    # Se descargan los activos que tienen un tipo >=0
     candidates = []
     # for row in c.execute("SELECT * FROM activo WHERE descargar =?", '1'):
     for row in c.execute("SELECT * FROM activo WHERE tipo >=?", '0'):

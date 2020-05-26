@@ -3,71 +3,67 @@
 import sqlite3
 import time
 from scrape_one import scrape
+import concurrent.futures
 
 
 def look_for_data():
-    hora_de_inicio = time.time()
+    print('****************************************************************', flush=True)
     conn = sqlite3.connect('app.db')
     c = conn.cursor()
-    t = "1"
-    candidates = []
-    for row in c.execute("SELECT * FROM activo WHERE descargar =?", t):
-        # 0: Id, 3:tipo, 4:url
-        element = [row[0], row[3], row[4]]
-        candidates.append(element)
-    n = 0
-    print('****************************************************************', flush=True)
-    while len(candidates) > 0 and n < 4:
-        print('Candidates pending:', len(candidates), flush=True)
-        remove = []
-        for index, e in enumerate(candidates):
-            date_old = False
-            if e[1] == 0 or e[1] == 2 or e[1] == 3:
-                try:
-                    date, VL = scrape(e[0])
-                except ValueError as e:
-                    print("Algo ha fallado:", e, flush=True)
-                    continue
-                if date == -1:
-                    continue
-            elif e[1] == 1 or e[1] == 4:
-                try:
-                    date, VL, date_old, VL_old = scrape(e[0])
-                except ValueError as e:
-                    print("Algo ha fallado:", e, flush=True)
-                    continue
-                if date == -1:
-                    continue
-            if '-' in VL:
-                print('VL es un -')
-            else:
-                if date_old:
-                    c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)", (date_old, VL_old, e[0],))
-                c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)", (date, VL, e[0],))
 
-            remove.append(index)
-        conn.commit()
-        remove.sort(reverse=True)
-        for e in remove:
-            del candidates[e]
-        if len(candidates) > 0:
-            print('***********************************************', flush=True)
-            print('The following candidates failed:', flush=True)
-            for e in candidates:
-                print(e[2], flush=True)
-            n = n + 1
-            if n > 3:
-                print('Too many retries. Aborting', flush=True)
+    candidates = []
+    # for row in c.execute("SELECT * FROM activo WHERE descargar =?", '1'):
+    for row in c.execute("SELECT * FROM activo WHERE tipo >=?", '0'):
+        # 0: Id, 3:tipo, 4:url
+        candidates.append(row[0])
+
+    n = 1
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        while True:
+            hora_de_inicio = time.time()
+            if len(candidates) == 1:
+                print('Scrapeando ', len(candidates), 'valor. Intento número', n)
             else:
-                time.sleep(60)
-                print('Retry number', n, flush=True)
+                print('Scrapeando ', len(candidates), 'valores. Intento número', n)
+            wait_for = []
+            for candidate in candidates:
+                wait_for.append(executor.submit(scrape, candidate))
+            for future in concurrent.futures.as_completed(wait_for):
+                future = future.result()
+                print(future)
+                if len(future) == 6:
+                    c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)",
+                              (future[2], future[3], future[-1],))
+                    conn.commit()
+                if len(future) >= 4:
+                    c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)",
+                              (future[0], future[1], future[-1],))
+                    conn.commit()
+                    candidates.remove(future[-1])
+                if len(future) == 3 and future[0] == 'Error':
+                    candidates.remove(future[-1])
+            duracion = (time.time() - hora_de_inicio) / 60
+            if duracion < 1:
+                duracion = duracion * 60
+                print('Duración de la descarga: ', '{:.2f}'.format(duracion), 'segundos', flush=True)
+            else:
+                print('Duración de la descarga: ', '{:.2f}'.format(duracion), 'minutos', flush=True)
+
+            if len(candidates) == 0:
+                break
+            n += 1
+            if n < 4:
+                print('---Los siguientes valores han dado error y se volvera a intentar: ', candidates)
+            else:
+                print('Demasiados reintentos. Abortando')
+                break
+            time.sleep(30)
 
     current_time = time.time()
     c.execute("INSERT OR REPLACE INTO variables (name, value) VALUES (?,?)", ("last_scrape", current_time))
     conn.commit()
     print('Scrape finished', flush=True)
-    duracion = (time.time() - hora_de_inicio) / 60
-    print('Duración de la descarga: ', '{:.2f}'.format(duracion), ' minutos', flush=True)
 
 
 if __name__ == "__main__":

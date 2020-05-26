@@ -24,15 +24,15 @@ def look_for_data():
         while True:
             hora_de_inicio = time.time()
             if len(candidates) == 1:
-                print('Scrapeando ', len(candidates), 'valor. Intento número', n)
+                print('Scrapeando ', len(candidates), 'valor. Intento número', n, flush=True)
             else:
-                print('Scrapeando ', len(candidates), 'valores. Intento número', n)
+                print('Scrapeando ', len(candidates), 'valores. Intento número', n, flush=True)
             wait_for = []
             for candidate in candidates:
                 wait_for.append(executor.submit(scrape, candidate))
             for future in concurrent.futures.as_completed(wait_for):
                 future = future.result()
-                print(future)
+                print(future, flush=True)
                 if len(future) == 6:
                     c.execute("INSERT OR REPLACE INTO cotizacion (fecha, VL, activo_id) VALUES (?, ?, ?)",
                               (future[2], future[3], future[-1],))
@@ -55,9 +55,9 @@ def look_for_data():
                 break
             n += 1
             if n < 4:
-                print('---Los siguientes valores han dado error y se volvera a intentar: ', candidates)
+                print('---Los siguientes valores han dado error y se volvera a intentar: ', candidates, flush=True)
             else:
-                print('Demasiados reintentos. Abortando')
+                print('Demasiados reintentos. Abortando', flush=True)
                 break
             time.sleep(30)
 

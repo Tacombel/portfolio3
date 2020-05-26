@@ -138,10 +138,7 @@ def variantes(e, tree):
         date_old = datetime.date(year_old, month_old, day_old)
         VL_old = VL_old.replace(",", ".")
 
-    if '-' in VL:
-        data= ['VL es un -']
-        return data
-    elif not VL_old:
+    if not VL_old:
         data = [date, VL]
     else:
         data = [date, VL, date_old, VL_old]
@@ -166,19 +163,25 @@ def scrape(activo_id):
         logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
         return data
     data = variantes(e[3], tree)
+
+    if '-' in data[1]:
+        data = ['Error', 'VL es un -. Status_code:' + status_code, activo_id]
+        logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
+        return data
+
     if len(data) == 4:
         logging.info('%s %s %s %s', str(data[0]), str(data[1]), str(data[2]), str(data[3]))
     elif len(data) == 2:
         logging.info('%s %s', str(data[0]), str(data[1]))
     elif len(data) == 1:
         logging.info('%s', data[0])
+
     if data:
         data.append(status_code)
         data.append(activo_id)
     else:
         data = ['Error', 'data no se ha creado. Status_code: ' + status_code, activo_id]
         logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
-        return data
     return data
 
 if __name__ == "__main__":

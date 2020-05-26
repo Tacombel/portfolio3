@@ -13,7 +13,7 @@ def look_for_data():
 
     candidates = []
     # for row in c.execute("SELECT * FROM activo WHERE descargar =?", '1'):
-    for row in c.execute("SELECT * FROM activo"):
+    for row in c.execute("SELECT * FROM activo WHERE tipo >=?", '0'):
         # 0: Id, 3:tipo, 4:url
         candidates.append(row[0])
 

@@ -65,7 +65,7 @@ def variantes(e, tree):
         VL_old = tree.xpath(vl_xpath_old)
         if len(date) == 0 or len(VL) == 0 or len(date_old) == 0 or len(VL_old) == 0:
             data = ['No data']
-            return data'
+            return data
         date, VL, date_old, VL_old = date[0], VL[0], date_old[0], VL_old[0]
         day = int(date[0:2])
         month = int(date[3:5])

@@ -165,7 +165,7 @@ def scrape(activo_id):
     data = variantes(e[3], tree)
 
     if '-' in data[1]:
-        data = ['Error', 'VL es un -. Status_code:' + status_code, activo_id]
+        data = ['Error', 'VL es un -. Status_code:' + str(status_code), activo_id]
         logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
         return data
 

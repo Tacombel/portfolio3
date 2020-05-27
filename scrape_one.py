@@ -166,7 +166,7 @@ def scrape(activo_id):
 
     # Para detectar que esta descargando
     # logging.info('Activo: %s Data: %s', str(e[3]), str(data))
-    print('Activo: ', activo_id, 'Tipo: ', e[3], 'Data: ', data)
+    print('Activo: ', activo_id, 'Tipo: ', e[3], 'Data: ', data, flush=True)
 
     if '-' in data[1]:
         data = ['Error', 'VL es un -. Status_code:' + str(status_code), activo_id]

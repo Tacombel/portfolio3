@@ -164,6 +164,10 @@ def scrape(activo_id):
         return data
     data = variantes(e[3], tree)
 
+    # Para detectar que esta descargando
+    # logging.info('Activo: %s Data: %s', str(e[3]), str(data))
+    print('Activo: ', activo_id, 'Tipo: ', e[3], 'Data: ', data)
+
     if '-' in data[1]:
         data = ['Error', 'VL es un -. Status_code:' + str(status_code), activo_id]
         logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))

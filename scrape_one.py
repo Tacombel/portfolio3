@@ -168,11 +168,11 @@ def scrape(activo_id):
     # logging.info('Activo: %s Data: %s', str(e[3]), str(data))
     print('Activo: ', activo_id, 'Tipo: ', e[3], 'Data: ', data, flush=True)
 
-    if '-' in data[1]:
-        data = ['Error', 'VL es un -. Status_code:' + str(status_code), activo_id]
-        logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
-        return data
-
+    if len(data) > 1:
+        if '-' in data[1]:
+            data = ['Error', 'VL es un -. Status_code:' + str(status_code), activo_id]
+            logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
+            return data
     if len(data) == 4:
         logging.info('%s %s %s %s', str(data[0]), str(data[1]), str(data[2]), str(data[3]))
     elif len(data) == 2:

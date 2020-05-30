@@ -43,7 +43,7 @@ def look_for_data():
                               (future[0], future[1], future[-1],))
                     conn.commit()
                     candidates.remove(future[-1])
-                if len(future) == 3 and future[0] == 'Error':
+                if len(future) == 3:
                     candidates.remove(future[-1])
             duracion = (time.time() - hora_de_inicio) / 60
             if duracion < 1:

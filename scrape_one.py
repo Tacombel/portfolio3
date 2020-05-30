@@ -15,7 +15,6 @@ import logging
 
 
 def descargar_pagina(url):
-    print('Scraping ', url)
     cwd = os.getcwd()
     # chromedriver para intel y chromedriver_ARM para raspberry
     if platform.system() == 'Windows':
@@ -156,6 +155,7 @@ def scrape(activo_id):
         data = ['Error', 'No hay url', activo_id]
         logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
         return data
+    print('Scraping activo: ', activo_id,' url ', e[4])
     tree, status_code = descargar_pagina(e[4])
     logging.info("Scraping %s Id: %s", e[4], activo_id)
     logging.info('Status code: %s', str(status_code))

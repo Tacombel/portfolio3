@@ -87,7 +87,6 @@ def npv_calculation(calculation_date):
         if not query:
             c.execute('SELECT * FROM cotizacion WHERE activo_id=? ORDER BY fecha ASC', (key,))
             query_bis = c.fetchall()
-            print(query_bis)
             date = query_bis[0][1]
             VL = query_bis[0][2]
         else:

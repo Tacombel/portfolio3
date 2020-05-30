@@ -15,6 +15,7 @@ import logging
 
 
 def descargar_pagina(url):
+    print('Acraping ', url)
     cwd = os.getcwd()
     # chromedriver para intel y chromedriver_ARM para raspberry
     if platform.system() == 'Windows':

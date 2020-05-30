@@ -155,7 +155,7 @@ def scrape(activo_id):
         data = ['Error', 'No hay url', activo_id]
         logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
         return data
-    print('Scraping activo: ', activo_id,' url ', e[4])
+    print('Scraping activo: ', activo_id, e[4])
     tree, status_code = descargar_pagina(e[4])
     logging.info("Scraping %s Id: %s", e[4], activo_id)
     logging.info('Status code: %s', str(status_code))

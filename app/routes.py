@@ -83,8 +83,16 @@ def npv_calculation(calculation_date):
         currency = query[5]
         c.execute('SELECT * FROM cotizacion WHERE activo_id=? and fecha<=? ORDER BY fecha DESC LIMIT 1', (key, calculation_date))
         query = c.fetchone()
-        date = query[1]
-        VL = query[2]
+        # Si algún activo del período no tiene algun movimiento al menos en esta fecha, da error
+        if not query:
+            c.execute('SELECT * FROM cotizacion WHERE activo_id=? ORDER BY fecha ASC', (key,))
+            query_bis = c.fetchall()
+            print(query_bis)
+            date = query_bis[0][1]
+            VL = query_bis[0][2]
+        else:
+            date = query[1]
+            VL = query[2]
         # XIRR
         if number == 1:
             if activo_id == 15:

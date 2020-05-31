@@ -83,7 +83,7 @@ def npv_calculation(calculation_date):
         currency = query[5]
         c.execute('SELECT * FROM cotizacion WHERE activo_id=? and fecha<=? ORDER BY fecha DESC LIMIT 1', (key, calculation_date))
         query = c.fetchone()
-        # Si algún activo del período no tiene algun movimiento al menos en esta fecha, da error
+        # Si algún activo del período no tiene al menos un movimiento antes de esta da error. Hago que coja el anterior
         if not query:
             c.execute('SELECT * FROM cotizacion WHERE activo_id=? ORDER BY fecha ASC', (key,))
             query_bis = c.fetchall()

@@ -189,18 +189,7 @@ def npv_calculation(calculation_date):
                 profit = ""
         value = "{0:.2f}".format(value) + "€"
         date = date_to_eu_format(date)
-        line = []
-        line.append(name)
-        line.append(number)
-        line.append(date)
-        line.append(VL)
-        line.append(currency)
-        line.append(value)
-        line.append(rate)
-        line.append(activo_id)
-        line.append(profit)
-        response.append(line)
-        print(key, line)
+        response.append([name, number, date, VL, currency, value, rate, activo_id, profit])
     return response, NPV
 
 

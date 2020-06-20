@@ -114,7 +114,6 @@ def npv_calculation(calculation_date):
                 for v in values:
                     profit = profit + v
             elif key == 37:
-                print(key)
                 c.execute('SELECT * FROM investment_movements WHERE fecha<=? and cuenta=?',
                           (calculation_date, "eToro"))
                 query = c.fetchall()
@@ -129,15 +128,12 @@ def npv_calculation(calculation_date):
                 valor_final_en_euros = to_euros(query[2], calculation_date, 'USD')
                 values.append(valor_final_en_euros)
                 dates.append(date_str_to_date(query[1]))
-                print(values)
-                print(dates)
                 try:
                     rate = "{0:.2f}".format(XIRR.xirr(values, dates) * 100) + "%"
                 except:  # noqa
                     rate = "XIRR error"
                 for v in values:
                     profit = profit + v
-                    print(profit)
             else:
                 rate = ""
         else:

@@ -93,8 +93,9 @@ def npv_calculation(calculation_date):
             date = query[1]
             VL = query[2]
         # XIRR
+        # Esta sección está para casos como los depositos, que no varian en numero de unidades
         if number == 1:
-            if activo_id == 15:
+            if key == 15:
                 c.execute('SELECT * FROM investment_movements WHERE fecha<=? and cuenta=?', (calculation_date, "CajaIngenieros"))
                 query = c.fetchall()
                 values = []
@@ -102,7 +103,7 @@ def npv_calculation(calculation_date):
                 for q in query:
                     values.append(q[2])
                     dates.append(date_str_to_date(q[1]))
-                c.execute('SELECT * FROM cotizacion WHERE activo_id=? and fecha<=? ORDER BY fecha DESC LIMIT 1', (15, calculation_date))
+                c.execute('SELECT * FROM cotizacion WHERE activo_id=? and fecha<=? ORDER BY fecha DESC LIMIT 1', (key, calculation_date))
                 query = c.fetchone()
                 values.append(query[2])
                 dates.append(date_str_to_date(query[1]))
@@ -112,6 +113,31 @@ def npv_calculation(calculation_date):
                     rate = "XIRR error"
                 for v in values:
                     profit = profit + v
+            elif key == 37:
+                print(key)
+                c.execute('SELECT * FROM investment_movements WHERE fecha<=? and cuenta=?',
+                          (calculation_date, "eToro"))
+                query = c.fetchall()
+                values = []
+                dates = []
+                for q in query:
+                    values.append(q[2])
+                    dates.append(date_str_to_date(q[1]))
+                c.execute('SELECT * FROM cotizacion WHERE activo_id=? and fecha<=? ORDER BY fecha DESC LIMIT 1',
+                          (key, calculation_date))
+                query = c.fetchone()
+                valor_final_en_euros = to_euros(query[2], calculation_date, 'USD')
+                values.append(valor_final_en_euros)
+                dates.append(date_str_to_date(query[1]))
+                print(values)
+                print(dates)
+                try:
+                    rate = "{0:.2f}".format(XIRR.xirr(values, dates) * 100) + "%"
+                except:  # noqa
+                    rate = "XIRR error"
+                for v in values:
+                    profit = profit + v
+                    print(profit)
             else:
                 rate = ""
         else:
@@ -146,7 +172,7 @@ def npv_calculation(calculation_date):
             query = c.fetchone()
             value_currency = query[2]
             value = number * VL / value_currency
-        if activo_id == 15:
+        if key in [15, 37]:
             profit = profit
         else:
             profit = profit + value
@@ -157,7 +183,7 @@ def npv_calculation(calculation_date):
         if number == "1.00":
             number = ""
             VL = ""
-            if activo_id == 15:
+            if activo_id in [15, 37]:
                 profit = profit
             else:
                 profit = ""
@@ -174,6 +200,7 @@ def npv_calculation(calculation_date):
         line.append(activo_id)
         line.append(profit)
         response.append(line)
+        print(key, line)
     return response, NPV
 
 

@@ -218,15 +218,7 @@ def index():
             VLanterior = "{0:.4f}".format(VLanterior)
             fechaanterior = date_to_eu_format(data[1][1])
             variation = "{0:.2f}".format(variation)
-            line = []
-            line.append(ticker)
-            line.append(nombre)
-            line.append(fechaultima)
-            line.append(VLultimo)
-            line.append(fechaanterior)
-            line.append(VLanterior)
-            line.append(variation)
-            response.append(line)
+            activo_id = q[0]
         elif len(data) == 1:
             ticker = q[1]
             nombre = q[2]
@@ -236,15 +228,8 @@ def index():
             variation = ""
             VLultimo = "{0:.4f}".format(VLultimo)
             fechaanterior = ""
-            line = []
-            line.append(ticker)
-            line.append(nombre)
-            line.append(fechaultima)
-            line.append(VLultimo)
-            line.append(fechaanterior)
-            line.append(VLanterior)
-            line.append(variation)
-            response.append(line)
+            activo_id = q[0]
+        response.append([ticker, nombre, fechaultima, VLultimo, fechaanterior, VLanterior, variation, activo_id])
 
     c.execute("SELECT * from variables WHERE name=?", ("last_scrape",))
     query = c.fetchone()

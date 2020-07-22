@@ -5,6 +5,7 @@
 
 import sqlite3
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
 from lxml import html
 import sys
 import datetime
@@ -31,7 +32,7 @@ def descargar_pagina(url):
         driver.get(url)
         tree = html.fromstring(driver.page_source)
         return tree, response.status_code
-        raise selenium.common.exceptions.TimeoutException
+        raise TimeoutException
 
 
 def variantes(e, tree):

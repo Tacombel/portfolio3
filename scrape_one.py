@@ -25,18 +25,13 @@ def descargar_pagina(url):
     options.add_argument('headless')
     # This option is necessary to avoid an error when running as a service
     options.add_argument("--no-sandbox")
-    driver = webdriver.Chrome(chrome_options=options, executable_path=path)
     session = requests.Session()
     response = session.get(url)
-    try:
+    with webdriver.Chrome(chrome_options=options, executable_path=path) as driver:
         driver.get(url)
         tree = html.fromstring(driver.page_source)
-    except:
-        print('Except en url: ', url, sys.exc_info()[0], flush=True)
-        raise
-        tree = []
-    driver.quit()
-    return tree, response.status_code
+        return tree, response.status_code
+        raise selenium.common.exceptions.TimeoutException
 
 
 def variantes(e, tree):

@@ -31,15 +31,11 @@ def descargar_pagina(url):
     try:
         driver.get(url)
         tree = html.fromstring(driver.page_source)
-        driver.quit()
-    except TimeoutException as inst:
-        print('Except en url: ', url)
+    except:
+        print('Except en url: ', url, sys.exc_info()[0])
+        raise
         tree = []
-        print(type(inst))
-        print(inst.args)
-        print(inst)
-        print('Fin Except')
-        driver.quit()
+    driver.quit()
     return tree, response.status_code
 
 

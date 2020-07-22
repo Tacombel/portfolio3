@@ -39,6 +39,7 @@ def descargar_pagina(url):
         print(inst.args)
         print(inst)
         print('Fin Except')
+        driver.quit()
     return tree, response.status_code
 
 

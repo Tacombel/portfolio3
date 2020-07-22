@@ -28,9 +28,17 @@ def descargar_pagina(url):
     driver = webdriver.Chrome(chrome_options=options, executable_path=path)
     session = requests.Session()
     response = session.get(url)
-    driver.get(url)
-    tree = html.fromstring(driver.page_source)
-    driver.quit()
+    try:
+        driver.get(url)
+        tree = html.fromstring(driver.page_source)
+        driver.quit()
+    except TimeoutException as inst:
+        print('Except en url: ', url)
+        tree = []
+        print(type(inst))
+        print(inst.args)
+        print(inst)
+        print('Fin Except')
     return tree, response.status_code
 
 

@@ -28,11 +28,14 @@ def descargar_pagina(url):
     options.add_argument("--no-sandbox")
     session = requests.Session()
     response = session.get(url)
-    with webdriver.Chrome(chrome_options=options, executable_path=path) as driver:
-        driver.get(url)
-        tree = html.fromstring(driver.page_source)
-        return tree, response.status_code
-        raise TimeoutException
+    try:
+        with webdriver.Chrome(chrome_options=options, executable_path=path) as driver:
+            driver.get(url)
+            tree = html.fromstring(driver.page_source)
+            return tree, response.status_code
+    except TimeoutException as error:
+        print('Timeout: ', error)
+        return None, response.status_code
 
 
 def variantes(e, tree):

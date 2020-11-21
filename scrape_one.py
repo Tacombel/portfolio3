@@ -30,7 +30,10 @@ def descargar_pagina(url):
     response = session.get(url)
     try:
         with webdriver.Chrome(chrome_options=options, executable_path=path) as driver:
-            print('Version de Chrome ', driver.capabilities['browserVersion'])
+            if 'browserVersion' in driver.capabilities:
+                print('Version de Chrome ', driver.capabilities['browserVersion'])
+            else:
+                print('Version de Chrome ', driver.capabilities['version'])
             print('Versión de Chromedriver ', driver.capabilities['chrome']['chromedriverVersion'].split(' ')[0])
             driver.get(url)
             tree = html.fromstring(driver.page_source)

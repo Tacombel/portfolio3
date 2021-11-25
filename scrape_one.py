@@ -17,15 +17,17 @@ import logging
 
 def descargar_pagina(url):
     cwd = os.getcwd()
-    # chromedriver para intel y chromedriver_ARM para raspberry
+    # la primera opción es para que funcione en windows y la segunda en la raspberry
     if platform.system() == 'Windows':
         path = cwd + '\chromedriver\chromedriver.exe'
     else:
-        path = cwd + '/chromedriver/chromedriver_ARM'
+        path = '/usr/bin/chromedriver'
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     # This option is necessary to avoid an error when running as a service
     options.add_argument("--no-sandbox")
+    # to keep it running after some unkown change in the driver
+    options.add_argument("--disable-gpu")
     session = requests.Session()
     response = session.get(url)
     try:

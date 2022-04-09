@@ -11,12 +11,10 @@ from lxml import html
 import sys
 import datetime
 import requests
-import os
 import logging
 
 
 def descargar_pagina(url):
-    cwd = os.getcwd()
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     options.add_argument("--no-sandbox")
@@ -160,39 +158,42 @@ def scrape(activo_id):
         data = ['Error', 'No hay url', activo_id]
         logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
         return data
-    print('Scraping activo: ', activo_id, e[4], flush=True)
-    tree, status_code = descargar_pagina(e[4])
-    logging.info("Scraping %s Id: %s", e[4], activo_id)
-    logging.info('Status code: %s', str(status_code))
-    if status_code == 404:
-        data = ['Error', 'La página no existe. Status_code: 404', activo_id]
-        logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
-        return data
-    data = variantes(e[3], tree)
-
-    # Para detectar que esta descargando
-    # logging.info('Activo: %s Data: %s', str(e[3]), str(data))
-    print('Activo: ', activo_id, 'Tipo: ', e[3], 'Data: ', data, flush=True)
-
-    if len(data) > 1:
-        if '-' in data[1]:
-            data = ['Error', 'VL es un -. Status_code:' + str(status_code), activo_id]
+    if e[4] == 'API':
+        print(f'Es un API')
+    else:
+        print('Scraping activo: ', activo_id, e[4], flush=True)
+        tree, status_code = descargar_pagina(e[4])
+        logging.info("Scraping %s Id: %s", e[4], activo_id)
+        logging.info('Status code: %s', str(status_code))
+        if status_code == 404:
+            data = ['Error', 'La página no existe. Status_code: 404', activo_id]
             logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
             return data
-    if len(data) == 4:
-        logging.info('%s %s %s %s', str(data[0]), str(data[1]), str(data[2]), str(data[3]))
-    elif len(data) == 2:
-        logging.info('%s %s', str(data[0]), str(data[1]))
-    elif len(data) == 1:
-        logging.info('%s', data[0])
+        data = variantes(e[3], tree)
 
-    if data:
-        data.append(status_code)
-        data.append(activo_id)
-    else:
-        data = ['Error', 'data no se ha creado. Status_code: ' + status_code, activo_id]
-        logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
-    return data
+        # Para detectar que esta descargando
+        # logging.info('Activo: %s Data: %s', str(e[3]), str(data))
+        print('Activo: ', activo_id, 'Tipo: ', e[3], 'Data: ', data, flush=True)
+
+        if len(data) > 1:
+            if '-' in data[1]:
+                data = ['Error', 'VL es un -. Status_code:' + str(status_code), activo_id]
+                logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
+                return data
+        if len(data) == 4:
+            logging.info('%s %s %s %s', str(data[0]), str(data[1]), str(data[2]), str(data[3]))
+        elif len(data) == 2:
+            logging.info('%s %s', str(data[0]), str(data[1]))
+        elif len(data) == 1:
+            logging.info('%s', data[0])
+
+        if data:
+            data.append(status_code)
+            data.append(activo_id)
+        else:
+            data = ['Error', 'data no se ha creado. Status_code: ' + status_code, activo_id]
+            logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
+        return data
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

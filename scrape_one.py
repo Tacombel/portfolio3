@@ -12,7 +12,9 @@ import sys
 import datetime
 import requests
 import logging
-
+from urllib.request import Request, urlopen
+from urllib.error import URLError
+import json
 
 def descargar_pagina(url):
     options = webdriver.ChromeOptions()
@@ -24,11 +26,6 @@ def descargar_pagina(url):
     response = session.get(url)
     try:
         with webdriver.Chrome(options=options, service=service) as driver:
-            if 'browserVersion' in driver.capabilities:
-                print('Version de Chrome ', driver.capabilities['browserVersion'])
-            else:
-                print('Version de Chrome ', driver.capabilities['version'])
-            print('Versión de Chromedriver ', driver.capabilities['chrome']['chromedriverVersion'].split(' ')[0])
             driver.get(url)
             tree = html.fromstring(driver.page_source)
             return tree, response.status_code
@@ -148,6 +145,27 @@ def variantes(e, tree):
 
     return data
 
+def variantes_API(e):
+    if e == 5:
+        # descargamos el precio del SCP en dolares desde Coinbase
+        url = 'https://api.coinbase.com/v2/exchange-rates?currency=SCP'
+        req = Request(url)
+        try:
+            response = urlopen(req)
+        except URLError as e:
+            if hasattr(e, 'reason'):
+                print('We failed to reach a server.', flush=True)
+                print('Reason: ', e.reason, flush=True)
+            elif hasattr(e, 'code'):
+                print('The server couldn\'t fulfill the request.', flush=True)
+                print('Error code: ', e.code, flush=True)
+            sys.exit()
+        data = json.loads(response.read())
+        print(f"$/SCP: {data['data']['rates']['USD']}", flush=True)
+        print(f"EUR/SCP: {data['data']['rates']['EUR']}", flush=True)
+        now = datetime.datetime.now()
+        return [datetime.date(now.year, now.month, now.day), data['data']['rates']['USD'], 200, 39]
+
 
 def scrape(activo_id):
     conn = sqlite3.connect('app.db')
@@ -159,7 +177,7 @@ def scrape(activo_id):
         logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
         return data
     if e[4] == 'API':
-        print(f'Es un API')
+        return variantes_API(e[3])
     else:
         print('Scraping activo: ', activo_id, e[4], flush=True)
         tree, status_code = descargar_pagina(e[4])
@@ -201,4 +219,4 @@ if __name__ == "__main__":
         if index == 0:
             continue
         logging.info('-----------------------------------------------------------------')
-        scrape(e)
+        print(scrape(e), flush=True)

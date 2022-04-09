@@ -161,8 +161,8 @@ def variantes_API(e):
                 print('Error code: ', e.code, flush=True)
             sys.exit()
         data = json.loads(response.read())
-        print(f"$/SCP: {data['data']['rates']['USD']}", flush=True)
-        print(f"EUR/SCP: {data['data']['rates']['EUR']}", flush=True)
+        logging.info(f"$/SCP: {data['data']['rates']['USD']}")
+        logging.info(f"EUR/SCP: {data['data']['rates']['EUR']}")
         now = datetime.datetime.now()
         return [datetime.date(now.year, now.month, now.day), data['data']['rates']['USD'], 200, 39]
 
@@ -177,11 +177,11 @@ def scrape(activo_id):
         logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
         return data
     if e[4] == 'API':
+        print(f'Scraping activo: {activo_id}', flush=True)
         return variantes_API(e[3])
     else:
         print('Scraping activo: ', activo_id, e[4], flush=True)
         tree, status_code = descargar_pagina(e[4])
-        logging.info("Scraping %s Id: %s", e[4], activo_id)
         logging.info('Status code: %s', str(status_code))
         if status_code == 404:
             data = ['Error', 'La página no existe. Status_code: 404', activo_id]
@@ -218,5 +218,4 @@ if __name__ == "__main__":
     for index, e in enumerate(sys.argv):
         if index == 0:
             continue
-        logging.info('-----------------------------------------------------------------')
-        print(scrape(e), flush=True)
+        print(f'Esto es lo que enviamos: {scrape(e)}')

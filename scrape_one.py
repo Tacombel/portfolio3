@@ -17,11 +17,7 @@ import logging
 
 def descargar_pagina(url):
     cwd = os.getcwd()
-    # la primera opción es para que funcione en windows y la segunda en la raspberry
-    if platform.system() == 'Windows':
-        path = cwd + '\chromedriver\chromedriver.exe'
-    else:
-        path = '/usr/bin/chromedriver'
+    path = '/usr/bin/chromedriver'
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     # This option is necessary to avoid an error when running as a service

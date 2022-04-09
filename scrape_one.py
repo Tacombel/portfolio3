@@ -5,6 +5,9 @@
 
 import sqlite3
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 from lxml import html
 import sys
@@ -17,17 +20,15 @@ import logging
 
 def descargar_pagina(url):
     cwd = os.getcwd()
-    path = '/usr/bin/chromedriver'
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
-    # This option is necessary to avoid an error when running as a service
     options.add_argument("--no-sandbox")
-    # to keep it running after some unkown change in the driver
     options.add_argument("--disable-gpu")
+    service = Service('/usr/bin/chromedriver')
     session = requests.Session()
     response = session.get(url)
     try:
-        with webdriver.Chrome(chrome_options=options, executable_path=path) as driver:
+        with webdriver.Chrome(options=options, service=service) as driver:
             if 'browserVersion' in driver.capabilities:
                 print('Version de Chrome ', driver.capabilities['browserVersion'])
             else:

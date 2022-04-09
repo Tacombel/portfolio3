@@ -6,13 +6,10 @@
 import sqlite3
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 from lxml import html
 import sys
 import datetime
-import platform
 import requests
 import os
 import logging

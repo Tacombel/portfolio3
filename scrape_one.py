@@ -5,38 +5,27 @@
 
 import sqlite3
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import TimeoutException
 from lxml import html
 import sys
 import datetime
-import platform
 import requests
-import os
 import logging
-
+from urllib.request import Request, urlopen
+from urllib.error import URLError
+import json
 
 def descargar_pagina(url):
-    cwd = os.getcwd()
-    # la primera opción es para que funcione en windows y la segunda en la raspberry
-    if platform.system() == 'Windows':
-        path = cwd + '\chromedriver\chromedriver.exe'
-    else:
-        path = '/usr/bin/chromedriver'
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
-    # This option is necessary to avoid an error when running as a service
     options.add_argument("--no-sandbox")
-    # to keep it running after some unkown change in the driver
     options.add_argument("--disable-gpu")
+    service = Service('/usr/bin/chromedriver')
     session = requests.Session()
     response = session.get(url)
     try:
-        with webdriver.Chrome(chrome_options=options, executable_path=path) as driver:
-            if 'browserVersion' in driver.capabilities:
-                print('Version de Chrome ', driver.capabilities['browserVersion'])
-            else:
-                print('Version de Chrome ', driver.capabilities['version'])
-            print('Versión de Chromedriver ', driver.capabilities['chrome']['chromedriverVersion'].split(' ')[0])
+        with webdriver.Chrome(options=options, service=service) as driver:
             driver.get(url)
             tree = html.fromstring(driver.page_source)
             return tree, response.status_code
@@ -156,6 +145,27 @@ def variantes(e, tree):
 
     return data
 
+def variantes_API(e):
+    if e == 5:
+        # descargamos el precio del SCP en dolares desde Coinbase
+        url = 'https://api.coinbase.com/v2/exchange-rates?currency=SCP'
+        req = Request(url)
+        try:
+            response = urlopen(req)
+        except URLError as e:
+            if hasattr(e, 'reason'):
+                print('We failed to reach a server.', flush=True)
+                print('Reason: ', e.reason, flush=True)
+            elif hasattr(e, 'code'):
+                print('The server couldn\'t fulfill the request.', flush=True)
+                print('Error code: ', e.code, flush=True)
+            sys.exit()
+        data = json.loads(response.read())
+        logging.info(f"$/SCP: {data['data']['rates']['USD']}")
+        logging.info(f"EUR/SCP: {data['data']['rates']['EUR']}")
+        now = datetime.datetime.now()
+        return [datetime.date(now.year, now.month, now.day), data['data']['rates']['USD'], 200, 39]
+
 
 def scrape(activo_id):
     conn = sqlite3.connect('app.db')
@@ -166,44 +176,46 @@ def scrape(activo_id):
         data = ['Error', 'No hay url', activo_id]
         logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
         return data
-    print('Scraping activo: ', activo_id, e[4], flush=True)
-    tree, status_code = descargar_pagina(e[4])
-    logging.info("Scraping %s Id: %s", e[4], activo_id)
-    logging.info('Status code: %s', str(status_code))
-    if status_code == 404:
-        data = ['Error', 'La página no existe. Status_code: 404', activo_id]
-        logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
-        return data
-    data = variantes(e[3], tree)
-
-    # Para detectar que esta descargando
-    # logging.info('Activo: %s Data: %s', str(e[3]), str(data))
-    print('Activo: ', activo_id, 'Tipo: ', e[3], 'Data: ', data, flush=True)
-
-    if len(data) > 1:
-        if '-' in data[1]:
-            data = ['Error', 'VL es un -. Status_code:' + str(status_code), activo_id]
+    if e[4] == 'API':
+        print(f'Scraping activo: {activo_id}', flush=True)
+        return variantes_API(e[3])
+    else:
+        print('Scraping activo: ', activo_id, e[4], flush=True)
+        tree, status_code = descargar_pagina(e[4])
+        logging.info('Status code: %s', str(status_code))
+        if status_code == 404:
+            data = ['Error', 'La página no existe. Status_code: 404', activo_id]
             logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
             return data
-    if len(data) == 4:
-        logging.info('%s %s %s %s', str(data[0]), str(data[1]), str(data[2]), str(data[3]))
-    elif len(data) == 2:
-        logging.info('%s %s', str(data[0]), str(data[1]))
-    elif len(data) == 1:
-        logging.info('%s', data[0])
+        data = variantes(e[3], tree)
 
-    if data:
-        data.append(status_code)
-        data.append(activo_id)
-    else:
-        data = ['Error', 'data no se ha creado. Status_code: ' + status_code, activo_id]
-        logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
-    return data
+        # Para detectar que esta descargando
+        # logging.info('Activo: %s Data: %s', str(e[3]), str(data))
+        print('Activo: ', activo_id, 'Tipo: ', e[3], 'Data: ', data, flush=True)
+
+        if len(data) > 1:
+            if '-' in data[1]:
+                data = ['Error', 'VL es un -. Status_code:' + str(status_code), activo_id]
+                logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
+                return data
+        if len(data) == 4:
+            logging.info('%s %s %s %s', str(data[0]), str(data[1]), str(data[2]), str(data[3]))
+        elif len(data) == 2:
+            logging.info('%s %s', str(data[0]), str(data[1]))
+        elif len(data) == 1:
+            logging.info('%s', data[0])
+
+        if data:
+            data.append(status_code)
+            data.append(activo_id)
+        else:
+            data = ['Error', 'data no se ha creado. Status_code: ' + status_code, activo_id]
+            logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
+        return data
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     for index, e in enumerate(sys.argv):
         if index == 0:
             continue
-        logging.info('-----------------------------------------------------------------')
-        scrape(e)
+        print(f'Esto es lo que enviamos: {scrape(e)}')

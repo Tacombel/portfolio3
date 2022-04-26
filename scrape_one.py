@@ -151,7 +151,9 @@ def variantes(e, tree):
 def variantes_API(e):
     if e == 5:
         # descargamos el precio del SCP en dolares desde Coinbase
-        url = 'https://api.coinbase.com/v2/exchange-rates?currency=SCP'
+        # la url falla así que he tenido que moverme a coingecko
+        # url = 'https://api.coinbase.com/v2/exchange-rates?currency=SCP'
+        url = 'https://api.coingecko.com/api/v3/coins/siaprime-coin'
         req = Request(url)
         try:
             response = urlopen(req)
@@ -164,10 +166,12 @@ def variantes_API(e):
                 print('Error code: ', e.code, flush=True)
             return ['No data']
         data = json.loads(response.read())
-        logging.info(f"$/SCP: {data['data']['rates']['USD']}")
-        logging.info(f"EUR/SCP: {data['data']['rates']['EUR']}")
+        # Estos loggins son los de Coinbase, que no funciona
+        # logging.info(f"$/SCP: {data['data']['rates']['USD']}")
+        # logging.info(f"EUR/SCP: {data['data']['rates']['EUR']}")
+        logging.info(f"$/SCP: {data['market_data']['current_price']['usd']}")
         now = datetime.datetime.now()
-        return [datetime.date(now.year, now.month, now.day), data['data']['rates']['USD'], 200, 39]
+        return [datetime.date(now.year, now.month, now.day), data['market_data']['current_price']['usd'], 200, 39]
 
 
 def scrape(activo_id):

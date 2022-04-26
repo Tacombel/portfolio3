@@ -6,7 +6,7 @@
 import sqlite3
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, WebDriverException
 from lxml import html
 import sys
 import datetime
@@ -31,6 +31,9 @@ def descargar_pagina(url):
             return tree, response.status_code
     except TimeoutException as error:
         print('Timeout: ', error)
+        return None, response.status_code
+    except WebDriverException as error:
+        print('Webdriver: ', error)
         return None, response.status_code
 
 
@@ -159,7 +162,7 @@ def variantes_API(e):
             elif hasattr(e, 'code'):
                 print('The server couldn\'t fulfill the request.', flush=True)
                 print('Error code: ', e.code, flush=True)
-            sys.exit()
+            return ['No data']
         data = json.loads(response.read())
         logging.info(f"$/SCP: {data['data']['rates']['USD']}")
         logging.info(f"EUR/SCP: {data['data']['rates']['EUR']}")

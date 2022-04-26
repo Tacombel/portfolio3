@@ -153,6 +153,7 @@ def variantes_API(e):
         # descargamos el precio del SCP en dolares desde Coinbase
         # la url falla así que he tenido que moverme a coingecko
         # url = 'https://api.coinbase.com/v2/exchange-rates?currency=SCP'
+        # Este endpoint tambien sirve y es mucho mas simple https://api.coingecko.com/api/v3/simple/price?ids=siaprime-coin&vs_currencies=usd
         url = 'https://api.coingecko.com/api/v3/coins/siaprime-coin'
         req = Request(url)
         try:

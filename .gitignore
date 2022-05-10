@@ -5,7 +5,7 @@
 /venv*/
 /.flaskenv
 /logs/
-/app.db
+data/app.db
 /update_server.bat
 __pycache__/
 app/__pycache__/

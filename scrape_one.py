@@ -15,6 +15,12 @@ import logging
 from urllib.request import Request, urlopen
 from urllib.error import URLError
 import json
+import os
+from config import Config  
+
+path = 'data/app.db'
+scriptdir = os.path.dirname(__file__)
+db_path = Config.DB_PATH
 
 def descargar_pagina(url):
     options = webdriver.ChromeOptions()
@@ -176,7 +182,7 @@ def variantes_API(e):
 
 
 def scrape(activo_id):
-    conn = sqlite3.connect('app.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute("SELECT * FROM activo WHERE id =?", (str(activo_id),))
     e = c.fetchone()

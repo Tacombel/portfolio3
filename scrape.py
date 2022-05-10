@@ -4,11 +4,17 @@ import sqlite3
 import time
 from scrape_one import scrape
 import concurrent.futures
+import os
+from config import Config
+
+path = 'data/app.db'
+scriptdir = os.path.dirname(__file__)
+db_path = Config.DB_PATH
 
 
 def look_for_data():
     print('****************************************************************', flush=True)
-    conn = sqlite3.connect('app.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
     # Se descargan los activos que tienen un tipo >=0

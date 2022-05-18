@@ -3,6 +3,7 @@
 # para que descargue pasar como argumento el activo_id
 # este modulo no actualiza la base de datos, solo descarga
 
+from errno import EKEYEXPIRED
 import sqlite3
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -22,6 +23,8 @@ path = 'data/app.db'
 scriptdir = os.path.dirname(__file__)
 db_path = Config.DB_PATH
 
+SECRET_KEY = os.environ.get('AM_I_IN_A_DOCKER_CONTAINER', False)
+
 def descargar_pagina(url):
     options = webdriver.FirefoxOptions()
     options.add_argument('headless')
@@ -31,12 +34,22 @@ def descargar_pagina(url):
     session = requests.Session()
     response = session.get(url)
     try:
-        with webdriver.Remote(
-            command_executor='http://selenium-firefox:4444/wd/hub',
-            options=options) as driver:
-            driver.get(url)
-            tree = html.fromstring(driver.page_source)
-            return tree, response.status_code
+        # This is to be able to test the script without building the container. The selenium container needs to be running.
+        if SECRET_KEY:
+            with webdriver.Remote(
+                command_executor='http://selenium-firefox:4444/wd/hub',
+                options=options) as driver:
+                driver.get(url)
+                tree = html.fromstring(driver.page_source)
+                return tree, response.status_code
+        else:
+            print('Usando localhost')
+            with webdriver.Remote(
+                command_executor='http://localhost:4444/wd/hub',
+                options=options) as driver:
+                driver.get(url)
+                tree = html.fromstring(driver.page_source)
+                return tree, response.status_code
     except TimeoutException as error:
         print('Timeout: ', error)
         return None, response.status_code

@@ -27,5 +27,7 @@ RUN chown -R appuser:appuser ./
 USER appuser
 
 ENV FLASK_APP portfolio3.py
+ENV AM_I_IN_A_DOCKER_CONTAINER Yes
+
 
 ENTRYPOINT ["./boot.sh"]

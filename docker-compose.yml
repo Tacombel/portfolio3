@@ -1,10 +1,19 @@
 version: '3.4'
 
 services:
-  scprime:
-    container_name: portfolio3
+  firefox:
+    image: selenium/standalone-firefox
+    container_name: selenium-firefox
+    ports:
+      - 4444:4444
+    volumes:
+       - /dev/shm:/dev/shm
+    restart: unless-stopped   
+  portfolio:
     image: portfolio3:latest
-
+    container_name: portfolio3
+    depends_on:
+      - firefox
     ports:
       - 5000:5000
     volumes:

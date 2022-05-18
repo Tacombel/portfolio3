@@ -23,7 +23,7 @@ scriptdir = os.path.dirname(__file__)
 db_path = Config.DB_PATH
 
 def descargar_pagina(url):
-    options = webdriver.ChromeOptions()
+    options = webdriver.FirefoxOptions()
     options.add_argument('headless')
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-gpu")
@@ -31,7 +31,9 @@ def descargar_pagina(url):
     session = requests.Session()
     response = session.get(url)
     try:
-        with webdriver.Chrome(options=options, service=service) as driver:
+        with webdriver.Remote(
+            command_executor='http://selenium-firefox:4444/wd/hub',
+            options=options) as driver:
             driver.get(url)
             tree = html.fromstring(driver.page_source)
             return tree, response.status_code

@@ -1,7 +1,9 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
 FROM python:3.8
 
-EXPOSE 5000
+# Nginx parece que no es capaz de comunicarse cuando el puerto interno y el externo son diferentes, asi que si coinciden varias app hay que compilar cada una a un puerto diferente
+# y arrancar flask en ese puerto. Cambiar tambien boot.sh
+EXPOSE 5100
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1

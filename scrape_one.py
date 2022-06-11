@@ -3,7 +3,6 @@
 # para que descargue pasar como argumento el activo_id
 # este modulo no actualiza la base de datos, solo descarga
 
-from errno import EKEYEXPIRED
 import sqlite3
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -30,18 +29,19 @@ def descargar_pagina(url):
     # This section is here to get the response code, as Selenium does not provide it.
     session = requests.Session()
     try:
-        response = session.get(url)
+        response = session.get(url, timeout=30)
         print(f'Response: {response.status_code}')
     except ConnectionError as error:
         print('Error getting response: ', error)
         return None
+    ##
 
     options = webdriver.FirefoxOptions()
     options.add_argument('headless')
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-gpu")
     try:
-        # This is to be able to test the script without building the container. Run the stack selenium-standalone-firefox.
+        # This is to be able to test the script without building the container. Run the stack portfolio3_sin_nginx.
         if SECRET_KEY:
             with webdriver.Remote(
                 command_executor='http://selenium-firefox:4444/wd/hub',
@@ -50,7 +50,7 @@ def descargar_pagina(url):
                 tree = html.fromstring(driver.page_source)
                 return tree, response.status_code
         else:
-            print('Usando selenium fuera del stack')
+            print('Usando selenium fuera de la red de Nginx')
             with webdriver.Remote(
                 command_executor='http://localhost:4444/wd/hub',
                 options=options) as driver:

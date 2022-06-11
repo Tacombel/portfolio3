@@ -12,12 +12,13 @@ from lxml import html
 import sys
 import datetime
 import requests
+from requests.exceptions import ConnectionError
 import logging
 from urllib.request import Request, urlopen
 from urllib.error import URLError
 import json
 import os
-from config import Config  
+from config import Config
 
 path = 'data/app.db'
 scriptdir = os.path.dirname(__file__)
@@ -26,15 +27,21 @@ db_path = Config.DB_PATH
 SECRET_KEY = os.environ.get('AM_I_IN_A_DOCKER_CONTAINER', False)
 
 def descargar_pagina(url):
+    # This section is here to get the response code, as Selenium does not provide it.
+    session = requests.Session()
+    try:
+        response = session.get(url)
+        print(f'Response: {response.status_code}')
+    except ConnectionError as error:
+        print('Error getting response: ', error)
+        return None
+
     options = webdriver.FirefoxOptions()
     options.add_argument('headless')
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-gpu")
-    service = Service('/usr/bin/chromedriver')
-    session = requests.Session()
-    response = session.get(url)
     try:
-        # This is to be able to test the script without building the container. The selenium container needs to be running.
+        # This is to be able to test the script without building the container. Run the stack selenium-standalone-firefox.
         if SECRET_KEY:
             with webdriver.Remote(
                 command_executor='http://selenium-firefox:4444/wd/hub',
@@ -43,7 +50,7 @@ def descargar_pagina(url):
                 tree = html.fromstring(driver.page_source)
                 return tree, response.status_code
         else:
-            print('Usando localhost')
+            print('Usando selenium fuera del stack')
             with webdriver.Remote(
                 command_executor='http://localhost:4444/wd/hub',
                 options=options) as driver:
@@ -56,7 +63,6 @@ def descargar_pagina(url):
     except WebDriverException as error:
         print('Webdriver: ', error)
         return None, response.status_code
-
 
 def variantes(e, tree):
     VL_old = False

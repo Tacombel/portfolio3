@@ -472,7 +472,7 @@ def investments():
         lista.append(q[3])
         lista.append(q[4])
         response.append(lista)
-    return render_template('investments.html', title='Investments' table=response)
+    return render_template('investments.html', title='Investments', table=response)
 
 
 @app.route('/settings', methods=['GET', 'POST'])

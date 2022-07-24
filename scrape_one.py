@@ -215,10 +215,10 @@ def scrape(activo_id):
         logging.info('%s %s %s', str(data[0]), str(data[1]), str(data[2]))
         return data
     if e[4] == 'API':
-        print(f'Scraping activo: {activo_id}', flush=True)
+        print(f'> Scraping activo: {activo_id}', flush=True)
         return variantes_API(e[3])
     else:
-        print('Scraping activo: ', activo_id, e[4], flush=True)
+        print('> Scraping activo: ', activo_id, e[4], flush=True)
         tree, status_code = descargar_pagina(e[4])
         logging.info('Status code: %s', str(status_code))
         if status_code == 404:

@@ -89,24 +89,27 @@ def variantes(e, tree):
         vl_xpath = '//*[@id="curr_table"]/tbody/tr[1]/td[2]/text()'
         date_xpath_old = '//*[@id="curr_table"]/tbody/tr[2]/td[1]/text()'
         vl_xpath_old = '//*[@id="curr_table"]/tbody/tr[2]/td[2]/text()'
-        date = tree.xpath(date_xpath)
-        VL = tree.xpath(vl_xpath)
-        date_old = tree.xpath(date_xpath_old)
-        VL_old = tree.xpath(vl_xpath_old)
-        if len(date) == 0 or len(VL) == 0 or len(date_old) == 0 or len(VL_old) == 0:
+        try:
+            date = tree.xpath(date_xpath)
+            VL = tree.xpath(vl_xpath)
+            date_old = tree.xpath(date_xpath_old)
+            VL_old = tree.xpath(vl_xpath_old)
+            date, VL, date_old, VL_old = date[0], VL[0], date_old[0], VL_old[0]
+            day = int(date[0:2])
+            month = int(date[3:5])
+            year = int(date[6:])
+            date = datetime.date(year, month, day)
+            VL = VL.replace(",", ".")
+            day_old = int(date_old[0:2])
+            month_old = int(date_old[3:5])
+            year_old = int(date_old[6:])
+            date_old = datetime.date(year_old, month_old, day_old)
+            VL_old = VL_old.replace(",", ".")
+        except AttributeError as e:
+            print(f'Error: {e}', flush=True)
             data = ['No data']
             return data
-        date, VL, date_old, VL_old = date[0], VL[0], date_old[0], VL_old[0]
-        day = int(date[0:2])
-        month = int(date[3:5])
-        year = int(date[6:])
-        date = datetime.date(year, month, day)
-        VL = VL.replace(",", ".")
-        day_old = int(date_old[0:2])
-        month_old = int(date_old[3:5])
-        year_old = int(date_old[6:])
-        date_old = datetime.date(year_old, month_old, day_old)
-        VL_old = VL_old.replace(",", ".")
+        
 
     # portal4.lacaixa.es
     # No funciona y no esta probado con los últimos cambios

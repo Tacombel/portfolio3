@@ -49,17 +49,16 @@
         {# application content needs to be provided in the app_content block #}
         {% block app_content %}{% endblock %}
     </div>
+    <!-- Footer -->
+        <footer class="page-footer font-small blue pt-4">
+    <!-- Copyright -->
+        <div class="footer-copyright text-center py-3">v3.6 ©2022 tacombel@gmail.com</div>
+    <!-- Copyright -->
+</footer>
+<!-- Footer -->
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
     {{ moment.include_moment() }}
 {% endblock %}
-
-<!-- Footer -->
-<footer class="page-footer font-small blue pt-4">
-    <!-- Copyright -->
-    <div class="footer-copyright text-center py-3">v3.6 ©2022 tacombel@gmail.com</div>
-    <!-- Copyright -->
-</footer>
-<!-- Footer -->

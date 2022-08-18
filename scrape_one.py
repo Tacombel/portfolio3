@@ -84,8 +84,8 @@ def variantes(e, tree):
         VL = VL[4:]
         VL = VL.replace(",", ".")
 
-    # es.investing.com
-    if e == 1:
+    # es.investing.com tipo II
+    if e == 6:
         date_xpath = '/html/body/div[1]/div[2]/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[1]/td[1]/time/text()'
         vl_xpath = '/html/body/div[1]/div[2]/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[1]/td[2]/text()'
         date_xpath_old = '/html/body/div[1]/div[2]/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[2]/td[1]/time/text()'
@@ -116,6 +116,39 @@ def variantes(e, tree):
             data = ['No data']
             return data
         
+# es.investing.com tipo I
+    if e == 1:
+        date_xpath = '//*[@id="curr_table"]/tbody/tr[1]/td[1]/text()'
+        vl_xpath = '//*[@id="curr_table"]/tbody/tr[1]/td[2]/text()'
+        date_xpath_old = '//*[@id="curr_table"]/tbody/tr[2]/td[1]/text()'
+        vl_xpath_old = '//*[@id="curr_table"]/tbody/tr[2]/td[2]/text()'
+        try:
+            n = 1
+            date = tree.xpath(date_xpath)
+            VL = tree.xpath(vl_xpath)
+            date_old = tree.xpath(date_xpath_old)
+            VL_old = tree.xpath(vl_xpath_old)
+            date, VL, date_old, VL_old = date[0], VL[0], date_old[0], VL_old[0]
+            day = int(date[0:2])
+            month = int(date[3:5])
+            year = int(date[6:])
+            date = datetime.date(year, month, day)
+            VL = VL.replace(",", ".")
+            day_old = int(date_old[0:2])
+            month_old = int(date_old[3:5])
+            year_old = int(date_old[6:])
+            date_old = datetime.date(year_old, month_old, day_old)
+            VL_old = VL_old.replace(",", ".")
+        except AttributeError as e:
+            print(f'AtributeError: {e}', flush=True)
+            data = ['No data']
+            return data
+        except IndexError as e:
+            print(f'IndexError: {e}', flush=True)
+            data = ['No data']
+            return data
+
+
 
     # portal4.lacaixa.es
     # No funciona y no esta probado con los últimos cambios

@@ -18,6 +18,7 @@ from urllib.error import URLError
 import json
 import os
 from config import Config
+from time import sleep
 
 path = 'data/app.db'
 scriptdir = os.path.dirname(__file__)
@@ -50,7 +51,7 @@ def descargar_pagina(url):
                 tree = html.fromstring(driver.page_source)
                 return tree, response.status_code
         else:
-            print('Usando selenium fuera de la red de Nginx')
+            print('Usando selenium fuera de la red de Nginx. Lanza el contenedor selenium-firefox')
             with webdriver.Remote(
                 command_executor='http://localhost:4444/wd/hub',
                 options=options) as driver:
@@ -85,11 +86,12 @@ def variantes(e, tree):
 
     # es.investing.com
     if e == 1:
-        date_xpath = '//*[@id="curr_table"]/tbody/tr[1]/td[1]/text()'
-        vl_xpath = '//*[@id="curr_table"]/tbody/tr[1]/td[2]/text()'
-        date_xpath_old = '//*[@id="curr_table"]/tbody/tr[2]/td[1]/text()'
-        vl_xpath_old = '//*[@id="curr_table"]/tbody/tr[2]/td[2]/text()'
+        date_xpath = '/html/body/div[1]/div[2]/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[1]/td[1]/time/text()'
+        vl_xpath = '/html/body/div[1]/div[2]/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[1]/td[2]/text()'
+        date_xpath_old = '/html/body/div[1]/div[2]/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[2]/td[1]/time/text()'
+        vl_xpath_old = '/html/body/div[1]/div[2]/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[2]/td[2]/text()'
         try:
+            n = 1
             date = tree.xpath(date_xpath)
             VL = tree.xpath(vl_xpath)
             date_old = tree.xpath(date_xpath_old)
@@ -106,7 +108,11 @@ def variantes(e, tree):
             date_old = datetime.date(year_old, month_old, day_old)
             VL_old = VL_old.replace(",", ".")
         except AttributeError as e:
-            print(f'Error: {e}', flush=True)
+            print(f'AtributeError: {e}', flush=True)
+            data = ['No data']
+            return data
+        except IndexError as e:
+            print(f'IndexError: {e}', flush=True)
             data = ['No data']
             return data
         

@@ -10,10 +10,14 @@ import XIRR
 import datetime
 from scrape import look_for_data
 from config import Config
+import os
 
+path = 'data/app.db'
+scriptdir = os.path.dirname(__file__)
+db_path = Config.DB_PATH
 
 def add_asset_units(calculation_date):
-    conn = sqlite3.connect('app.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute('SELECT * FROM movimiento_activo WHERE fecha<=? ORDER BY fecha DESC', (calculation_date,))
     query = c.fetchall()
@@ -49,7 +53,7 @@ def date_to_eu_format(fecha):
 
 
 def to_euros(value, date, currency):
-    conn = sqlite3.connect('app.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     if currency == 'GBP':
         c.execute('SELECT * FROM cotizacion WHERE activo_id=? and fecha<=?  ORDER BY fecha DESC LIMIT 1', (11, date))
@@ -68,7 +72,7 @@ def to_euros(value, date, currency):
 
 def npv_calculation(calculation_date):
     # The if activo_id == 15 are for an special case
-    conn = sqlite3.connect('app.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     units = assets_with_units(calculation_date)
     NPV = 0
@@ -193,7 +197,7 @@ def npv_calculation(calculation_date):
 @app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    conn = sqlite3.connect('app.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
     if request.method == 'POST':
@@ -318,7 +322,7 @@ def reset_password(token):
 @app.route('/assets')
 @login_required
 def assets():
-    conn = sqlite3.connect('app.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     response = []
     c.execute('SELECT * FROM activo')
@@ -335,7 +339,7 @@ def assets():
 @app.route('/asset/<id>')
 @login_required
 def asset(id):
-    conn = sqlite3.connect('app.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute('SELECT * FROM activo WHERE id=?', (id,))
     query = c.fetchone()
@@ -376,7 +380,7 @@ def asset(id):
 @app.route('/asset/VL/<id>', methods=['POST'])
 @login_required
 def asset_vl(id):
-    conn = sqlite3.connect('app.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     fecha = request.form.get('fecha')
     VL = request.form.get('VL')
@@ -388,7 +392,7 @@ def asset_vl(id):
 @app.route('/asset/movement/<id>', methods=['POST'])
 @login_required
 def asset_movement(id):
-    conn = sqlite3.connect('app.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     fecha = request.form.get('fecha')
     unidades = request.form.get('unidades')
@@ -401,7 +405,7 @@ def asset_movement(id):
 @app.route('/npv', methods=['GET', 'POST'])
 @login_required
 def npv():
-    conn = sqlite3.connect('app.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     data = []
     if request.form.get('first_date'):
@@ -449,7 +453,7 @@ def npv():
 @app.route('/investments', methods=['GET', 'POST'])
 @login_required
 def investments():
-    conn = sqlite3.connect('app.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     if request.method == 'POST':
         a = request.form.get('fecha')
@@ -468,13 +472,13 @@ def investments():
         lista.append(q[3])
         lista.append(q[4])
         response.append(lista)
-    return render_template('investments.html', table=response)
+    return render_template('investments.html', title='Investments', table=response)
 
 
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
-    conn = sqlite3.connect('app.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     if request.method == 'POST':
         a = int(request.form.get('value')) * 60

@@ -36,7 +36,6 @@ lxml==4.8.0
 Mako==1.2.0
 MarkupSafe==2.1.1
 outcome==1.1.0
-pkg_resources==0.0.0
 pycparser==2.21
 PyJWT==2.3.0
 pyOpenSSL==22.0.0

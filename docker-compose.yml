@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  firefox:
+    image: selenium/standalone-firefox:101.0
+    container_name: selenium-firefox
+    ports:
+      - 4444:4444
+    volumes:
+       - /dev/shm:/dev/shm
+    restart: unless-stopped   
+    networks:
+      - nginx_default
+  portfolio:
+    image: tacombel/portfolio3:v3.6
+    container_name: portfolio
+    depends_on:
+      - firefox
+    ports:
+      - 5100:5100
+    volumes:
+      - data:/portfolio/data
+    restart: unless-stopped
+    networks:
+      - nginx_default

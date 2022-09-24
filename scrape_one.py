@@ -86,10 +86,10 @@ def variantes(e, tree):
 
     # es.investing.com tipo II
     if e == 6:
-        date_xpath = '/html/body/div[1]/div[2]/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[1]/td[1]/time/text()'
-        vl_xpath = '/html/body/div[1]/div[2]/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[1]/td[2]/text()'
-        date_xpath_old = '/html/body/div[1]/div[2]/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[2]/td[1]/time/text()'
-        vl_xpath_old = '/html/body/div[1]/div[2]/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[2]/td[2]/text()'
+        date_xpath =     '/html/body/div[1]/div/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[1]/td[1]/time/text()'
+        vl_xpath =       '/html/body/div[1]/div/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[1]/td[2]/text()'
+        date_xpath_old = '/html/body/div[1]/div/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[2]/td[1]/time/text()'
+        vl_xpath_old =   '/html/body/div[1]/div/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody/tr[2]/td[2]/text()'
         try:
             n = 1
             date = tree.xpath(date_xpath)

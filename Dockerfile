@@ -30,6 +30,7 @@ USER appuser
 
 ENV FLASK_APP portfolio3.py
 ENV AM_I_IN_A_DOCKER_CONTAINER Yes
+ENV TZ="Europe/Madrid"
 
 
 ENTRYPOINT ["./boot.sh"]

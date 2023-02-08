@@ -10,7 +10,7 @@ cffi==1.15.0
 chardet==4.0.0
 charset-normalizer==2.0.12
 click==8.1.2
-cryptography==36.0.2
+cryptography==39.0.1
 dnspython==2.2.1
 dominate==2.6.0
 email-validator==1.1.3
